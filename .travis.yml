@@ -1,0 +1,26 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7"
+
+branches:
+  only:
+    - master
+    - major-revision
+
+install:
+  - pip install -r requirements.txt
+  - pip install torch
+  - pip install gym
+  - pip install .
+
+script:
+  - pytest
+
+notifications:
+  email:
+    recipients:
+      - 452914639@qq.com
+    on_success: never
+    on_failure: always
