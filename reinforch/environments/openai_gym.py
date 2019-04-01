@@ -75,7 +75,6 @@ class OpenAIGym(Environment):
         state, reward, terminal, _ = self.gym.step(action)
         return OpenAIGym.flatten_state(state=state), terminal, reward
 
-
     @staticmethod
     def state_from_space(space):
         if isinstance(space, gym.spaces.Discrete):
@@ -224,3 +223,6 @@ class OpenAIGym(Environment):
                 if isinstance(action, dict):
                     actions[name] = OpenAIGym.unflatten_action(action=action)
             return actions
+
+
+GymEnv = OpenAIGym
