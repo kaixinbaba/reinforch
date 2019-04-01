@@ -9,7 +9,9 @@ reinforch
    :target: https://travis-ci.org/kaixinbaba/reinforch
    :alt: Latest Travis CI build status
 
-RL common framework implements by pytorch
+reinforce + pytorch \
+
+A RL common framework implements by pytorch
 
 Usage
 -----
