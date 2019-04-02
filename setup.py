@@ -30,6 +30,7 @@ setup(
     install_requires=[
         'gym>=0.12.1',
         'torch>=1.0.0',
+        'tqdm',
     ],
 
     classifiers=[

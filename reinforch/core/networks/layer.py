@@ -1,16 +1,38 @@
 """
 Collection of custom layer implementations.
 """
+from functools import wraps
+
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from reinforch import ReinforchException
+
 
 class Layer(object):
-    pass
+
+    def __init__(self, name=None):
+        self.name = name
+
+    def apply(self, x):
+        raise NotImplementedError
+
+    def __call__(self, *args, **kwargs):
+        return self.apply(*args, **kwargs)
 
 
 class Input(Layer):
-    pass
+
+    def __init__(self, aggregation_type='concat', dim=1, name=None):
+        if aggregation_type == 'concat':
+            self.layer = lambda x: torch.cat(x, dim=dim)
+        else:
+            raise ReinforchException('Unknown aggregation_type "{}"'.format(aggregation_type))
+        super(Input, self).__init__(name=name)
+
+    def apply(self, x):
+        return self.layer(*x)
 
 
 class Output(Layer):
@@ -18,11 +40,25 @@ class Output(Layer):
 
 
 class Linear(Layer):
-    pass
+
+    def __init__(self, in_size, out_size, name=None, bias=True):
+        self.layer = nn.Linear(in_features=in_size, out_features=out_size, bias=bias)
+        super(Linear, self).__init__(name=name)
+
+    def apply(self, x):
+        return self.layer(x)
 
 
 class Dense(Layer):
-    pass
+
+    def __init__(self, in_size, out_size, name=None, bias=True, nonlinear='relu'):
+        self.nonlinear_layer = Nonlinearity(nonlinear)
+        self.linear_layer = Linear(in_size=in_size, out_size=out_size, bias=bias)
+        super(Dense, self).__init__(name=name)
+
+    def apply(self, x):
+        x = self.linear_layer(x)
+        return self.nonlinear_layer(x)
 
 
 class PytorchLayer(Layer):
@@ -59,12 +95,25 @@ class PytorchLayer(Layer):
 
 
 class Nonlinearity(Layer):
-    nolinear_layers = dict(
+    # FIXME use F or nn ?
+    nonlinear_layers = dict(
         relu=F.relu,
         softmax=F.softmax,
         tanh=F.tanh,
         sigmoid=F.sigmoid,
+        softmin=F.softmin,
+        softplus=F.softplus,
+        log_softmax=F.log_softmax,
     )
+
+    def __init__(self, name=None, nonlinear='relu'):
+        self.layer = self.nonlinear_layers.get(nonlinear)
+        if self.layer is None:
+            raise ReinforchException('Unknown nonlinear type "{}"'.format(nonlinear))
+        super(Nonlinearity, self).__init__(name=name)
+
+    def apply(self, x):
+        return self.layer(x)
 
 
 class Dropout(Layer):
