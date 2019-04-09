@@ -30,7 +30,9 @@ setup(
     install_requires=[
         'gym>=0.12.1',
         'torch>=1.0.0',
-        'tqdm',
+        'tqdm>=4.31.1',
+        'pytest>=3.6.4',
+        'logbook>=1.4.3',
     ],
 
     classifiers=[

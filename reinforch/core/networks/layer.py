@@ -25,13 +25,14 @@ class Input(Layer):
 
     def __init__(self, aggregation_type='concat', dim=1, name=None):
         if aggregation_type == 'concat':
-            self.layer = lambda x: torch.cat(x, dim=dim)
+            # TODO use dim param
+            self.layer = torch.cat
         else:
             raise ReinforchException('Unknown aggregation_type "{}"'.format(aggregation_type))
         super(Input, self).__init__(name=name)
 
-    def apply(self, x):
-        return self.layer(*x)
+    def apply(self, *x):
+        return self.layer((*x,))
 
 
 class Output(Layer):
