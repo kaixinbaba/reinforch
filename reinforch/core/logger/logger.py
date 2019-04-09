@@ -8,6 +8,7 @@ StreamHandler(sys.stdout).push_application()
 def Log(name, level=INFO):
     return Logger(name, level)
 
+
 LEVEL = dict(
     debug=DEBUG,
     info=INFO,

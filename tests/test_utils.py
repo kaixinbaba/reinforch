@@ -11,3 +11,6 @@ def test_read_config():
     # FIXME if run at other Compute
     s = '/Users/junjiexun/PycharmProjects/reinforch/tests/config.json'
     assert isinstance(read_config(s), dict)
+
+def test_from_config():
+    pass

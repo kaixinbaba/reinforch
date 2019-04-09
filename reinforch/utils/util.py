@@ -11,7 +11,7 @@ logging = Log(__name__, level)
 
 
 def read_config(config: Union[str, dict, Config]) -> Config:
-    logging.debug('config : {}, type : {}'.format(config, type(config)))
+    _check_config_type(config)
     result = None
     if isinstance(config, str):
         if os.path.exists(config) and os.path.isfile(config):
@@ -34,3 +34,23 @@ def read_config(config: Union[str, dict, Config]) -> Config:
         raise ReinforchException(
             "Can't read config, please check! The argument config is [{}], type is [{}]".format(config, type(config)))
     return result
+
+
+def _check_config_type(config):
+    if not (isinstance(config, str) or isinstance(config, dict) or isinstance(config, Config)):
+        raise ReinforchException('config type is not correct! type [{}]'.format(type(config)))
+
+
+def from_config(config: Union[str, dict, Config], predefine: dict = None, default_object=None, kwargs: dict = None):
+    config = read_config(config)
+    try:
+        target_type = config.pop('type')
+        if predefine is None:
+            target = default_object
+        else:
+            target = predefine[target_type]
+    except Exception as e:
+        raise ReinforchException('Config must contain "type" key to init the obj')
+    kw = dict(config)
+    kw.update(kwargs)
+    return target(**kw)
