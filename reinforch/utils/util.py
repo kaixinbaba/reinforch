@@ -4,10 +4,10 @@ from json import JSONDecodeError
 from typing import Union
 
 from reinforch.core.configs import Config
-from reinforch.core.logger import Log, DEBUG
+from reinforch.core.logger import Log, level
 from reinforch.exception import ReinforchException
 
-logging = Log(__name__, DEBUG)
+logging = Log(__name__, level)
 
 
 def read_config(config: Union[str, dict, Config]) -> Config:
