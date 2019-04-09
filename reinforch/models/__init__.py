@@ -1,7 +1,7 @@
-from reinforch.models.model import Model
+from reinforch.models.model import Model, DQNModel
 
 models = dict(
-
+    dqn=DQNModel,
 )
 
-__all__ = ['Model', 'models']
+__all__ = ['Model', 'DQNModel', 'models']

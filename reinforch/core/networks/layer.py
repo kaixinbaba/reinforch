@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from reinforch import ReinforchException
+from reinforch.utils import util_from_config
 
 
 class Layer(object):
@@ -19,6 +20,11 @@ class Layer(object):
 
     def __call__(self, *args, **kwargs):
         return self.apply(*args, **kwargs)
+
+    @staticmethod
+    def from_config(config):
+        config = util_from_config(config)
+
 
 
 class Input(Layer):
@@ -37,6 +43,7 @@ class Input(Layer):
 
 class Output(Layer):
     pass
+
 
 
 class Linear(Layer):

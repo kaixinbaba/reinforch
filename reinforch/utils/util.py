@@ -54,3 +54,6 @@ def from_config(config: Union[str, dict, Config], predefine: dict = None, defaul
     kw = dict(config)
     kw.update(kwargs)
     return target(**kw)
+
+
+util_from_config = from_config

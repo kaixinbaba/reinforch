@@ -1,22 +1,36 @@
-from reinforch.core.networks import Layer, Input, Output
-
 import torch.nn as nn
-import torch
+
+from reinforch.core.networks import Layer, Input, networks, Output
+from reinforch.exception import ReinforchException
+from reinforch.utils import util_from_config
 
 
 class Network(nn.Module):
 
-    def __init__(self, in_size, out_size, config=None):
+    def __init__(self, input_size, output_size, action_dim=None, config=None, **kwargs):
         super(Network, self).__init__()
-        self.in_size = in_size
-        self.out_size = out_size
+        self.input_size = input_size
+        self.output_size = output_size
+        self.action_dim = action_dim
+        self.continue_action = action_dim is not None
         self.layers = []
         self._setup(config)
 
     def _setup(self, config):
-        input_ = Input()
-        self.layers.append(input_)
+        # FIXME config first ?
+        config = util_from_config(config)
+        network = config.get('type')
+        if network is None or networks.get(network) is None:
+            raise ReinforchException('Network\'s type is not exists!')
+        layers = config.get('layers')
+        if layers is None or isinstance(layers, list):
+            raise ReinforchException('Network\'s layers must be not None and list !')
+        for config_layer in layers:
+            layer = Layer.from_config(config_layer)
+            self.layers.append(layer)
 
+    def from_config(self, config):
+        raise NotImplementedError
 
     def forward(self, x):
         raise NotImplementedError
@@ -25,3 +39,11 @@ class Network(nn.Module):
         assert isinstance(layer, Layer)
         self.layers.append(layer)
 
+
+class DenseNetwork(Network):
+
+    def __init__(self, input_size, output_size, action_dim=None, config=None):
+        super(DenseNetwork, self).__init__(input_size=input_size,
+                                           output_size=output_size,
+                                           action_dim=action_dim,
+                                           config=config)

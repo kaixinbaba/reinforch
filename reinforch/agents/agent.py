@@ -1,25 +1,32 @@
+from typing import Union
+
+from reinforch.core.configs import Config
+from reinforch.core.memorys import Memory
+from reinforch.models import DQNModel
+
+
 class Agent(object):
 
     def __init__(self):
         pass
 
-    def init_model(self):
-        pass
+    def init_model(self, **kwargs):
+        raise NotImplementedError
 
     def act(self, state):
-        pass
+        raise NotImplementedError
 
     def step(self):
-        pass
+        raise NotImplementedError
 
     def close(self):
-        pass
+        raise NotImplementedError
 
     def save(self, dest=None):
-        pass
+        raise NotImplementedError
 
     def load(self, dest=None):
-        pass
+        raise NotImplementedError
 
 
 class DQNAgent(Agent):
@@ -27,12 +34,13 @@ class DQNAgent(Agent):
     def __init__(self,
                  n_s: int,
                  n_a: int,
-                 lr=0.001,  # TODO a object
-                 batch_size=32,
-                 memory=None,
-                 action_dim: int=None,
-                 double_dqn:bool=True,
-                 dueling_dqn:bool=True):
+                 lr: float = 0.001,  # TODO a object
+                 batch_size: int = 32,
+                 memory: Memory = None,
+                 action_dim: int = None,
+                 double_dqn: bool = True,
+                 dueling_dqn: bool = True,
+                 config: Union[str, dict, Config] = None):
         super(DQNAgent, self).__init__()
         self.n_s = n_s
         self.n_a = n_a
@@ -43,3 +51,11 @@ class DQNAgent(Agent):
         self.continue_action = action_dim is not None
         self.double_dqn = double_dqn
         self.dueling_dqn = dueling_dqn
+        self.model = self.init_model(input_size=n_s,
+                                     output_size=n_a,
+                                     last_scale=action_dim,
+                                     config=config)
+
+    def init_model(self, **kwargs):
+        return DQNModel(**kwargs)
+

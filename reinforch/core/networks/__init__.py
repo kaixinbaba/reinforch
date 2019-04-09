@@ -1,6 +1,8 @@
 from reinforch.core.networks.layer import Layer, Input, Output, PytorchLayer, Nonlinearity, Dropout, Flatten, Pool2d, \
     Embedding, Linear, Dense, Dueling, Conv1d, Conv2d, InternalLstm, Lstm
 
+from reinforch.core.networks.network import Network, DenseNetwork
+
 layers = dict(
     input=Input,
     output=Output,
@@ -17,6 +19,11 @@ layers = dict(
     conv2d=Conv2d,
     internal_lstm=InternalLstm,
     lstm=Lstm
+)
+
+networks = dict(
+    network=Network,
+    dense_network=DenseNetwork,
 )
 
 __all__ = [
@@ -37,4 +44,5 @@ __all__ = [
     'Conv2d',
     'InternalLstm',
     'Lstm',
+    'Network',
 ]
