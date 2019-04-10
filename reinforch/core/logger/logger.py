@@ -4,11 +4,6 @@ from logbook import Logger, StreamHandler, INFO, DEBUG, WARNING, ERROR, CRITICAL
 
 StreamHandler(sys.stdout).push_application()
 
-
-def Log(name, level=INFO):
-    return Logger(name, level)
-
-
 LEVEL = dict(
     debug=DEBUG,
     info=INFO,
@@ -18,6 +13,11 @@ LEVEL = dict(
     critical=CRITICAL,
 )
 
-level = LEVEL['info']
+default_level = LEVEL['info']
+
+
+def Log(name, level=default_level):
+    return Logger(name, level)
+
 
 logging = Log(__name__)

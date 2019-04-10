@@ -21,7 +21,7 @@ class Network(nn.Module):
         config = util_from_config(config)
         network = config.get('type')
         if network is None or networks.get(network) is None:
-            raise ReinforchException('Network\'s type is not exists!')
+            raise ReinforchException('type {} in config is not exists!'.format(network))
         layers = config.get('layers')
         if layers is None or isinstance(layers, list):
             raise ReinforchException('Network\'s layers must be not None and list !')

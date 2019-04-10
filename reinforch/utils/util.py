@@ -3,11 +3,17 @@ import os
 from json import JSONDecodeError
 from typing import Union
 
+import torch
+
 from reinforch.core.configs import Config
-from reinforch.core.logger import Log, level
+from reinforch.core.logger import Log
 from reinforch.exception import ReinforchException
 
-logging = Log(__name__, level)
+logging = Log(__name__)
+
+Tensor = torch.Tensor
+FloatTensor = torch.FloatTensor
+LongTensor = torch.LongTensor
 
 
 def read_config(config: Union[str, dict, Config]) -> Config:
@@ -56,4 +62,40 @@ def from_config(config: Union[str, dict, Config], predefine: dict = None, defaul
     return target(**kw)
 
 
+def obj2tensor(obj, feed_network: bool = True, target_shape: Union[list, tuple] = None):
+    """
+    :param obj:
+    :param feed_network: if True, reshape tensor to matrix
+    :param target_shape
+    :return:
+    """
+    if isinstance(obj, Tensor):
+        return tensor2tensor(obj, feed_network=feed_network, target_shape=target_shape)
+    elif isinstance(obj, (list, tuple)):
+        return tensor2tensor(Tensor(obj), feed_network=feed_network, target_shape=target_shape)
+    else:
+        # TODO other type
+        try:
+            return Tensor(obj)
+        except TypeError as e:
+            raise ReinforchException('The obj type {} can not be casted to Tensor'.format(type(obj)))
+
+
+def tensor2tensor(tensor, feed_network: bool = True, target_shape: Union[list, tuple] = None):
+    if target_shape is not None:
+        return tensor.view(target_shape)
+    elif feed_network:
+        size = len(tensor.size())
+        if size == 1:
+            return tensor.view(-1, 1)
+        elif size == 2:
+            return tensor
+        else:
+            # FIXME maybe needn't raise
+            raise ReinforchException('tensor\'s size more than 2, please specified [target_shape]')
+    return tensor
+
+
 util_from_config = from_config
+t2t = tensor2tensor
+o2t = obj2tensor

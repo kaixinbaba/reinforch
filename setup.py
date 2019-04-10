@@ -33,6 +33,7 @@ setup(
         'tqdm>=4.31.1',
         'pytest>=3.6.4',
         'logbook>=1.4.3',
+        'numpy>=1.16.2',
     ],
 
     classifiers=[
