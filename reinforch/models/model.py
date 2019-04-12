@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import torch
 import torch.nn.functional as F
-import torch.optim as optim
+import torch.optim as optimize
 
 from reinforch.core.networks import Network
 
@@ -34,8 +34,8 @@ class Model(object):
 class DQNModel(Model):
 
     def __init__(self,
-                 input_size=None,
-                 output_size=None,
+                 in_size=None,
+                 out_size=None,
                  last_scale=None,
                  lr=0.001,
                  gamma=0.99,
@@ -44,19 +44,19 @@ class DQNModel(Model):
                  tau=0.01,
                  config=None):
         super(DQNModel, self).__init__()
+        self.in_size = in_size
+        self.out_size = out_size
+        self.last_scale = last_scale
         self.lr = lr
         self.gamma = gamma
         self.c_step = c_step
         self.learn_count = 0
         self.soft_update = soft_update
         self.tau = tau
-        self.eval_network = Network(input_size=input_size,
-                                    output_size=output_size,
-                                    last_scale=last_scale,
-                                    config=config)
+        self.eval_network = Network.from_config(config=config)
         self.target_net = deepcopy(self.eval_network)
-        self.loss = F.mse_loss()
-        self.optim = optim.Adam(params=self.eval_network.parameters(), lr=lr)
+        self.loss = F.mse_loss
+        self.optim = optimize.Adam(self.eval_network.parameters(), lr=lr)
 
     def update(self, b_s=None, b_a=None, b_r=None, b_s_=None, b_done=None):
         eval_q = torch.gather(self.eval_network(b_s), 1, b_a)

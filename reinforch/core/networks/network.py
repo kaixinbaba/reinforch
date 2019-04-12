@@ -7,30 +7,25 @@ from reinforch.utils import util_from_config
 
 class Network(nn.Module):
 
-    def __init__(self, input_size, output_size, action_dim=None, config=None, **kwargs):
+    def __init__(self, in_size, out_size, action_dim=None, layers: list = None, **kwargs):
         super(Network, self).__init__()
-        self.input_size = input_size
-        self.output_size = output_size
+        self.in_size = in_size
+        self.out_size = out_size
         self.action_dim = action_dim
         self.continue_action = action_dim is not None
         self.layers = []
-        self._setup(config)
+        self._setup(layers)
 
-    def _setup(self, config):
-        # FIXME config first ?
-        config = util_from_config(config)
-        network = config.get('type')
-        if network is None or networks.get(network) is None:
-            raise ReinforchException('type {} in config is not exists!'.format(network))
-        layers = config.get('layers')
-        if layers is None or isinstance(layers, list):
+    def _setup(self, layers):
+        if layers is None or not isinstance(layers, list):
             raise ReinforchException('Network\'s layers must be not None and list !')
         for config_layer in layers:
             layer = Layer.from_config(config_layer)
             self.layers.append(layer)
 
-    def from_config(self, config):
-        raise NotImplementedError
+    @staticmethod
+    def from_config(config):
+        return util_from_config(config, predefine=networks)
 
     def forward(self, x):
         raise NotImplementedError
@@ -42,14 +37,18 @@ class Network(nn.Module):
 
 class DenseNetwork(Network):
 
-    def __init__(self, input_size, output_size, action_dim=None, config=None):
-        super(DenseNetwork, self).__init__(input_size=input_size,
-                                           output_size=output_size,
+    def __init__(self, in_size, out_size, action_dim=None, config=None, **kwargs):
+        super(DenseNetwork, self).__init__(in_size=in_size,
+                                           out_size=out_size,
                                            action_dim=action_dim,
-                                           config=config)
+                                           config=config, **kwargs)
 
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
 
 networks = dict(
     network=Network,
-    dense_network=DenseNetwork,
+    dense=DenseNetwork,
 )

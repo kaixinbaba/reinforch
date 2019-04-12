@@ -50,14 +50,19 @@ def from_config(config: Union[str, dict, Config], predefine: dict = None, defaul
     config = read_config(config)
     try:
         target_type = config.pop('type')
-        if predefine is None:
-            target = default_object
-        else:
-            target = predefine[target_type]
     except Exception as e:
-        raise ReinforchException('Config must contain "type" key to init the obj')
+        raise ReinforchException('Config must contain "type" key to init the object')
+    if predefine is None:
+        if default_object is None or not callable(default_object):
+            raise ReinforchException('Please provide a default callable object')
+        target = default_object
+    else:
+        target = predefine.get(target_type)
+        if target is None:
+            raise ReinforchException('Can\'t find match type [{}]'.format(target_type))
     kw = dict(config)
-    kw.update(kwargs)
+    if kwargs is not None:
+        kw.update(kwargs)
     return target(**kw)
 
 

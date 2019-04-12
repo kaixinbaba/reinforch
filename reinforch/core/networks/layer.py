@@ -23,7 +23,8 @@ class Layer(object):
 
     @staticmethod
     def from_config(config):
-        config = util_from_config(config)
+        return util_from_config(config, predefine=layers)
+
 
 
 
@@ -49,8 +50,9 @@ class Output(Layer):
 class Linear(Layer):
 
     def __init__(self, in_size, out_size, name=None, bias=True):
-        self.layer = nn.Linear(in_features=in_size, out_features=out_size, bias=bias)
         super(Linear, self).__init__(name=name)
+        self.layer = nn.Linear(in_features=in_size, out_features=out_size, bias=bias)
+        self.layer.weight.data.normal_(0, 0.01)
 
     def apply(self, x):
         return self.layer(x)
@@ -59,9 +61,9 @@ class Linear(Layer):
 class Dense(Layer):
 
     def __init__(self, in_size, out_size, name=None, bias=True, nonlinear='relu'):
+        super(Dense, self).__init__(name=name)
         self.nonlinear_layer = Nonlinearity(nonlinear)
         self.linear_layer = Linear(in_size=in_size, out_size=out_size, bias=bias)
-        super(Dense, self).__init__(name=name)
 
     def apply(self, x):
         x = self.linear_layer(x)
@@ -157,3 +159,22 @@ class Flatten(Layer):
 
 class Pool2d(Layer):
     pass
+
+
+layers = dict(
+    input=Input,
+    output=Output,
+    tf_layer=PytorchLayer,
+    nonlinearity=Nonlinearity,
+    dropout=Dropout,
+    flatten=Flatten,
+    pool2d=Pool2d,
+    embedding=Embedding,
+    linear=Linear,
+    dense=Dense,
+    dueling=Dueling,
+    conv1d=Conv1d,
+    conv2d=Conv2d,
+    internal_lstm=InternalLstm,
+    lstm=Lstm
+)

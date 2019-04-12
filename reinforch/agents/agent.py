@@ -84,8 +84,8 @@ class DQNAgent(Agent):
         self.continue_action = action_dim is not None
         self.double_dqn = double_dqn
         self.dueling_dqn = dueling_dqn
-        self.model = self.init_model(input_size=n_s,
-                                     output_size=n_a,
+        self.model = self.init_model(in_size=n_s,
+                                     out_size=n_a,
                                      last_scale=action_dim,
                                      lr=lr,
                                      gamma=gamma,
