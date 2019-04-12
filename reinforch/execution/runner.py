@@ -10,7 +10,7 @@ class Runner(object):
         self.reset()
 
     def reset(self):
-        raise NotImplementedError
+        self.environment.reset()
 
     def run(self):
         pass
