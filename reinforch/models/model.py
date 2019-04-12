@@ -21,6 +21,14 @@ class Model(object):
     def from_config(config):
         pass
 
+    def save(self, dest=None):
+        raise NotImplementedError
+
+    def load(self, dest=None):
+        raise NotImplementedError
+
+    def close(self):
+        raise NotImplementedError
 
 class DQNModel(Model):
 

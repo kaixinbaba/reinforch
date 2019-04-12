@@ -149,3 +149,12 @@ class DQNAgent(Agent):
 
     def init_model(self, **kwargs):
         return DQNModel(**kwargs)
+
+    def save(self, dest=None):
+        self.model.save(dest=dest)
+
+    def load(self, dest=None):
+        self.model.load(dest=dest)
+
+    def close(self):
+        self.model.close()
