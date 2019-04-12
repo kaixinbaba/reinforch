@@ -30,6 +30,7 @@ class Model(object):
     def close(self):
         raise NotImplementedError
 
+
 class DQNModel(Model):
 
     def __init__(self,

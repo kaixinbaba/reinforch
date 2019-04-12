@@ -32,7 +32,7 @@ setup(
         'torch>=1.0.0',
         'tqdm>=4.31.1',
         'pytest>=3.6.4',
-        'logbook>=1.4.3',
+        'logbook',
         'numpy>=1.16.2',
     ],
 

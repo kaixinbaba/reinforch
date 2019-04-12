@@ -2,7 +2,6 @@ import json
 import os
 from json import JSONDecodeError
 from typing import Union
-
 import torch
 
 from reinforch.core.configs import Config

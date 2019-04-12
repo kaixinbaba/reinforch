@@ -2,5 +2,5 @@ pytest==3.6.4
 gym>=0.12.1
 torch>=1.0.0
 tqdm>=4.31.1
-logbook>=1.4.3
+Logbook>=1.4.3
 numpy>=1.16.2

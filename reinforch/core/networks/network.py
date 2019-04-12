@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from reinforch.core.networks import Layer, Input, networks, Output
+from reinforch.core.networks import Layer
 from reinforch.exception import ReinforchException
 from reinforch.utils import util_from_config
 
@@ -47,3 +47,9 @@ class DenseNetwork(Network):
                                            output_size=output_size,
                                            action_dim=action_dim,
                                            config=config)
+
+
+networks = dict(
+    network=Network,
+    dense_network=DenseNetwork,
+)
