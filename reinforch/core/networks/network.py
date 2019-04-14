@@ -14,6 +14,7 @@ class Network(nn.Module):
         self.action_dim = action_dim
         self.continue_action = action_dim is not None
         self.layers = []
+        # self.layers = nn.ModuleList()
         self._setup(layers)
 
     def _setup(self, layers):
@@ -21,7 +22,7 @@ class Network(nn.Module):
             raise ReinforchException('Network\'s layers must be not None and list !')
         for config_layer in layers:
             layer = Layer.from_config(config_layer)
-            self.layers.append(layer)
+            self.add_layers(layer)
 
     @staticmethod
     def from_config(config):
@@ -32,6 +33,7 @@ class Network(nn.Module):
 
     def add_layers(self, layer):
         assert isinstance(layer, Layer)
+        # setattr(self, layer.name, layer)
         self.layers.append(layer)
 
 
