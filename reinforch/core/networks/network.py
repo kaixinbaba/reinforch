@@ -13,8 +13,8 @@ class Network(nn.Module):
         self.out_size = out_size
         self.action_dim = action_dim
         self.continue_action = action_dim is not None
-        self.layers = []
-        # self.layers = nn.ModuleList()
+        # self.layers = []
+        self.layers = nn.ModuleList()
         self._setup(layers)
 
     def _setup(self, layers):

@@ -10,12 +10,13 @@ from reinforch import ReinforchException
 from reinforch.utils import util_from_config
 
 
-class Layer(object):
+class Layer(nn.Module):
 
     def __init__(self, name=None):
+        super(Layer, self).__init__()
         self.name = name
 
-    def apply(self, x):
+    def forward(self, x):
         raise NotImplementedError
 
     def __call__(self, *args, **kwargs):
@@ -24,8 +25,6 @@ class Layer(object):
     @staticmethod
     def from_config(config):
         return util_from_config(config, predefine=layers)
-
-
 
 
 class Input(Layer):
@@ -38,13 +37,12 @@ class Input(Layer):
             raise ReinforchException('Unknown aggregation_type "{}"'.format(aggregation_type))
         super(Input, self).__init__(name=name)
 
-    def apply(self, *x):
+    def forward(self, *x):
         return self.layer((*x,))
 
 
 class Output(Layer):
     pass
-
 
 
 class Linear(Layer):
@@ -54,7 +52,7 @@ class Linear(Layer):
         self.layer = nn.Linear(in_features=in_size, out_features=out_size, bias=bias)
         self.layer.weight.data.normal_(0, 0.01)
 
-    def apply(self, x):
+    def forward(self, x):
         return self.layer(x)
 
 
@@ -65,7 +63,7 @@ class Dense(Layer):
         self.nonlinear_layer = Nonlinearity(nonlinear)
         self.linear_layer = Linear(in_size=in_size, out_size=out_size, bias=bias)
 
-    def apply(self, x):
+    def forward(self, x):
         x = self.linear_layer(x)
         return self.nonlinear_layer(x)
 
@@ -121,7 +119,7 @@ class Nonlinearity(Layer):
             raise ReinforchException('Unknown nonlinear type "{}"'.format(nonlinear))
         super(Nonlinearity, self).__init__(name=name)
 
-    def apply(self, x):
+    def forward(self, x):
         return self.layer(x)
 
 

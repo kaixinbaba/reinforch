@@ -28,7 +28,7 @@ class Model(object):
         raise NotImplementedError
 
     def close(self):
-        raise NotImplementedError
+        pass
 
 
 class DQNModel(Model):
