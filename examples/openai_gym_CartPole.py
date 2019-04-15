@@ -4,7 +4,16 @@ from reinforch.environments import OpenAIGym
 from reinforch.execution import Runner
 
 if __name__ == '__main__':
-    env = OpenAIGym('CartPole-v0', visualize=True)
+
+    def cartpole_reward_shape(state=None, reward=None, terminal=None, env=None):
+        x, x_dot, theta, theta_dot = state
+        r1 = (env.x_threshold - abs(x)) / env.x_threshold - 0.8
+        r2 = (env.theta_threshold_radians - abs(theta)) / env.theta_threshold_radians - 0.5
+        reward = r1 + r2
+        return reward
+
+    env = OpenAIGym('CartPole-v0', visualize=False, reward_shape=cartpole_reward_shape)
+    env.seed(7)
     n_s = env.n_s
     n_a = env.n_a
     memory = SimpleMatrixMemory(row_size=2000, every_class_size=[n_s, 1, 1, n_s, 1])
@@ -28,5 +37,5 @@ if __name__ == '__main__':
     with Runner(agent=agent,
                 environment=env,
                 total_episode=500,
-                max_step_in_one_episode=200) as runner:
+                max_step_in_one_episode=1000) as runner:
         runner.train()

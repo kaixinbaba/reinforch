@@ -65,6 +65,20 @@ class Dense(Layer):
         return self.nonlinear_layer(x)
 
 
+class Dueling(Layer):
+
+    def __init__(self, in_size, out_size, name=None, bias=True, nonlinear='relu'):
+        super(Dueling, self).__init__(name=name)
+        self.A = Linear(in_size=in_size, out_size=1, bias=bias)
+        self.V = Linear(in_size=in_size, out_size=out_size, bias=bias)
+
+    def forward(self, x):
+        A = self.A(x)
+        V = self.V(x)
+        Q = V + (A - torch.mean(A))
+        return Q
+
+
 class PytorchLayer(Layer):
     pytorch_layers = dict(
         avg_pool1d=nn.AvgPool1d,
@@ -124,10 +138,6 @@ class Dropout(Layer):
 
 
 class Embedding(Layer):
-    pass
-
-
-class Dueling(Layer):
     pass
 
 

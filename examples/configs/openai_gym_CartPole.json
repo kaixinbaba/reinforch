@@ -16,11 +16,10 @@
       "out_size": 16
     },
     {
-      "type": "dense",
+      "type": "dueling",
       "name": "output",
       "in_size": 16,
-      "out_size": 2,
-      "nonlinear": "softmax"
+      "out_size": 2
     }
   ]
 }

@@ -16,7 +16,13 @@ class OpenAIGym(Environment):
     To use install with "pip install gym".
     """
 
-    def __init__(self, gym_id, monitor=None, monitor_safe=False, monitor_video=0, visualize=False):
+    def __init__(self,
+                 gym_id,
+                 monitor=None,
+                 monitor_safe=False,
+                 monitor_video=0,
+                 visualize=False,
+                 reward_shape=None): # TODO a reward object
         """
         Initialize OpenAI Gym.
 
@@ -32,6 +38,7 @@ class OpenAIGym(Environment):
         self.gym_id = gym_id
         self.gym = gym.make(gym_id)  # Might raise gym.error.UnregisteredEnv or gym.error.DeprecatedEnv
         self.visualize = visualize
+        self.reward_shape = reward_shape
 
         if monitor:
             if monitor_video == 0:
@@ -73,7 +80,13 @@ class OpenAIGym(Environment):
             self.gym.render()
         action = OpenAIGym.unflatten_action(action=action)
         state, reward, terminal, _ = self.gym.step(action)
-        return OpenAIGym.flatten_state(state=state), reward,terminal, _
+
+        if self.reward_shape is not None:
+            reward = self.reward_shape(state=state,
+                                       reward=reward,
+                                       terminal=terminal,
+                                       env=self.gym)
+        return OpenAIGym.flatten_state(state=state), reward, terminal, _
 
     @staticmethod
     def state_from_space(space):

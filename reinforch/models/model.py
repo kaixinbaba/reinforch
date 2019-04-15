@@ -42,6 +42,8 @@ class DQNModel(Model):
                  c_step=1000,
                  soft_update=False,
                  tau=0.01,
+                 double_dqn=True,
+                 dueling_dqn=True,
                  config=None):
         super(DQNModel, self).__init__()
         self.in_size = in_size
@@ -53,6 +55,8 @@ class DQNModel(Model):
         self.learn_count = 0
         self.soft_update = soft_update
         self.tau = tau
+        self.double_dqn = double_dqn
+        self.dueling_dqn = dueling_dqn
         self.eval_network = Network.from_config(config=config)
         self.target_net = deepcopy(self.eval_network)
         self.loss = F.mse_loss
@@ -63,10 +67,14 @@ class DQNModel(Model):
 
     def update(self, b_s=None, b_a=None, b_r=None, b_s_=None, b_done=None):
         eval_q = torch.gather(self.eval_network(b_s), 1, b_a)
-        next_max_from_eval_index = self.eval_network(b_s_).max(1)[1].unsqueeze(1)
+        if self.double_dqn:
+            next_max_action_index = self._double_choose_max_action(b_s_)
+        else:
+            next_max_action_index = self._normal_choose_max_action(b_s_)
+
         # fix target net
         next_actions = self.target_net(b_s_).detach()
-        next_max = next_actions.gather(1, next_max_from_eval_index)
+        next_max = next_actions.gather(1, next_max_action_index)
 
         target_q = b_r + self.gamma * next_max * (1 - b_done)
         loss = self.loss(eval_q, target_q)
@@ -76,6 +84,12 @@ class DQNModel(Model):
         self.optim.step()
 
         self._update_target_net()
+
+    def _normal_choose_max_action(self, b_s_):
+        return self.target_net(b_s_).max(1)[1].unsqueeze(1)
+
+    def _double_choose_max_action(self, b_s_):
+        return self.eval_network(b_s_).max(1)[1].unsqueeze(1)
 
     def _soft_update(self):
         for target_param, local_param in zip(

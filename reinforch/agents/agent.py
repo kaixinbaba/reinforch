@@ -1,7 +1,6 @@
 from typing import Union
 
 import numpy as np
-import torch
 
 from reinforch.core.configs import Config
 from reinforch.core.logger import Log
@@ -93,6 +92,8 @@ class DQNAgent(Agent):
                                      c_step=c_step,
                                      soft_update=soft_update,
                                      tau=tau,
+                                     double_dqn=double_dqn,
+                                     dueling_dqn=dueling_dqn,
                                      config=config)
 
     def act(self, state):
