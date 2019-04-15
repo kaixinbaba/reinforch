@@ -45,6 +45,10 @@ class Environment(object):
         raise NotImplementedError
 
     @property
+    def n_s(self):
+        return self.states.get('shape')[0]
+
+    @property
     def states(self):
         """
         Return the state space. Might include subdicts if multiple states are
@@ -57,6 +61,10 @@ class Environment(object):
                 - shape: integer, or list/tuple of integers (required).
         """
         raise NotImplementedError
+
+    @property
+    def n_a(self):
+        return self.actions.get('num_actions')
 
     @property
     def actions(self):

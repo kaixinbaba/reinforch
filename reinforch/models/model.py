@@ -58,6 +58,9 @@ class DQNModel(Model):
         self.loss = F.mse_loss
         self.optim = optimize.Adam(self.eval_network.parameters(), lr=lr)
 
+    def forward(self, x):
+        return self.eval_network(x)
+
     def update(self, b_s=None, b_a=None, b_r=None, b_s_=None, b_done=None):
         eval_q = torch.gather(self.eval_network(b_s), 1, b_a)
         next_max_from_eval_index = self.eval_network(b_s_).max(1)[1].unsqueeze(1)

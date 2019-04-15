@@ -1,8 +1,8 @@
-from reinforch.core.memorys.memory import Memory
+from reinforch.core.memorys.memory import Memory, SimpleMatrixMemory
 
 memorys = dict(
-
+    matrix=SimpleMatrixMemory,
 )
 
 
-__all__ = ['Memory', 'memorys']
+__all__ = ['SimpleMatrixMemory', 'memorys']

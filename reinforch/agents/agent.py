@@ -1,12 +1,13 @@
 from typing import Union
 
 import numpy as np
+import torch
 
 from reinforch.core.configs import Config
 from reinforch.core.logger import Log
 from reinforch.core.memorys import Memory
 from reinforch.models import DQNModel
-from reinforch.utils import o2t
+from reinforch.utils import o2t, LongTensor
 
 logging = Log(__name__)
 
@@ -84,8 +85,8 @@ class DQNAgent(Agent):
         self.continue_action = action_dim is not None
         self.double_dqn = double_dqn
         self.dueling_dqn = dueling_dqn
-        self.model = self.init_model(in_size=n_s,
-                                     out_size=n_a,
+        self.model = self.init_model(in_size=self.n_s,
+                                     out_size=self.n_a,
                                      last_scale=action_dim,
                                      lr=lr,
                                      gamma=gamma,
@@ -99,12 +100,11 @@ class DQNAgent(Agent):
             # random choose an action
             return np.random.randint(self.n_a)
         else:
-            # greedy choose max action
             # cast to pytorch tensor
             state = o2t(state)
             action = self.model.forward(state)
-            # cast an action into an environment needed.
-            return action
+            # select greedy action
+            return int(action.argmax())
 
     def step(self,
              state,
@@ -140,6 +140,12 @@ class DQNAgent(Agent):
 
     def _learn(self):
         b_state, b_action, b_reward, b_next_state, b_done = self.memory.sample(self.batch_size)
+        # cast to tensor
+        b_state = o2t(b_state)
+        b_action = o2t(b_action, target_type=LongTensor)
+        b_reward = o2t(b_reward)
+        b_next_state = o2t(b_next_state)
+        b_done = o2t(b_done)
 
         self.model.update(b_s=b_state,
                           b_a=b_action,

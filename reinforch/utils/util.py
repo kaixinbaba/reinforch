@@ -2,7 +2,9 @@ import json
 import os
 from json import JSONDecodeError
 from typing import Union
+
 import torch
+import numpy as np
 
 from reinforch.core.configs import Config
 from reinforch.core.logger import Log
@@ -66,32 +68,37 @@ def from_config(config: Union[str, dict, Config], predefine: dict = None, defaul
     return target(**kw)
 
 
-def obj2tensor(obj, feed_network: bool = True, target_shape: Union[list, tuple] = None):
+def obj2tensor(obj, feed_network: bool = True, target_type=FloatTensor, target_shape: Union[list, tuple] = None):
     """
     :param obj:
     :param feed_network: if True, reshape tensor to matrix
+    :param target_type: Cast to which type tensor
     :param target_shape
     :return:
     """
     if isinstance(obj, Tensor):
-        return tensor2tensor(obj, feed_network=feed_network, target_shape=target_shape)
-    elif isinstance(obj, (list, tuple)):
-        return tensor2tensor(Tensor(obj), feed_network=feed_network, target_shape=target_shape)
+        return tensor2tensor(obj, feed_network=feed_network, target_type=target_type, target_shape=target_shape)
+    elif isinstance(obj, (list, tuple, np.ndarray)):
+        return tensor2tensor(Tensor(obj), feed_network=feed_network, target_type=target_type, target_shape=target_shape)
     else:
         # TODO other type
         try:
             return Tensor(obj)
-        except TypeError as e:
+        except TypeError:
             raise ReinforchException('The obj type {} can not be casted to Tensor'.format(type(obj)))
 
 
-def tensor2tensor(tensor, feed_network: bool = True, target_shape: Union[list, tuple] = None):
+def tensor2tensor(tensor, feed_network: bool = True, target_type=FloatTensor, target_shape: Union[list, tuple] = None):
+    if tensor is None:
+        raise ReinforchException("'None' type can not be casted to Tensor")
+    # cast type
+    tensor = tensor.type(target_type)
     if target_shape is not None:
         return tensor.view(target_shape)
     elif feed_network:
         size = len(tensor.size())
         if size == 1:
-            return tensor.view(-1, 1)
+            return tensor.view(1, -1)
         elif size == 2:
             return tensor
         else:

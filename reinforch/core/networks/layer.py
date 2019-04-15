@@ -19,9 +19,6 @@ class Layer(nn.Module):
     def forward(self, x):
         raise NotImplementedError
 
-    def __call__(self, *args, **kwargs):
-        return self.apply(*args, **kwargs)
-
     @staticmethod
     def from_config(config):
         return util_from_config(config, predefine=layers)
@@ -104,13 +101,13 @@ class PytorchLayer(Layer):
 class Nonlinearity(Layer):
     # FIXME use F or nn ?
     nonlinear_layers = dict(
-        relu=F.relu,
-        softmax=F.softmax,
-        tanh=F.tanh,
-        sigmoid=F.sigmoid,
-        softmin=F.softmin,
-        softplus=F.softplus,
-        log_softmax=F.log_softmax,
+        relu=nn.relu,
+        softmax=nn.softmax,
+        tanh=nn.tanh,
+        sigmoid=nn.sigmoid,
+        softmin=nn.softmin,
+        softplus=nn.softplus,
+        log_softmax=nn.log_softmax,
     )
 
     def __init__(self, name=None, nonlinear='relu'):

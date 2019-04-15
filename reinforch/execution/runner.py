@@ -28,7 +28,7 @@ class Runner(object):
     def reset(self):
         pass
 
-    def run(self):
+    def train(self):
         self.log.info(
             'Start play! Agent : {agent}, Environment : {environment}'.format(
                 agent=self.agent,
@@ -39,11 +39,10 @@ class Runner(object):
                 total_episode=self.total_episode,
                 max_step_in_one_episode=self.max_step_in_one_episode,
             ))
-        for episode in range(1, self.total_episode + 1):
+        for episode in tqdm(range(1, self.total_episode + 1), ncols=120):
             episode_start_time = time.time()
-            # self.log.debug('Current episode {episode}')
             state = self.environment.reset()
-            for step in tqdm(range(self.max_step_in_one_episode), ncols=120):
+            for step in range(self.max_step_in_one_episode):
                 action = self.agent.act(state)
                 next_state, reward, done, info = self.environment.execute(action=action)
                 self.agent.step(state=state,

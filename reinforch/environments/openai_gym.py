@@ -73,7 +73,7 @@ class OpenAIGym(Environment):
             self.gym.render()
         action = OpenAIGym.unflatten_action(action=action)
         state, reward, terminal, _ = self.gym.step(action)
-        return OpenAIGym.flatten_state(state=state), terminal, reward
+        return OpenAIGym.flatten_state(state=state), reward,terminal, _
 
     @staticmethod
     def state_from_space(space):

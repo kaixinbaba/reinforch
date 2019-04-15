@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List, Tuple
 
 import numpy as np
 
@@ -30,17 +30,16 @@ class SimpleMatrixMemory(Memory):
 
     def __init__(self,
                  row_size,
-                 column_size,
-                 every_class_size: Union[list, tuple],
+                 every_class_size: Union[List[int], Tuple[int]],
                  column_class: int = 5):
         super(SimpleMatrixMemory, self).__init__()
         self.row_size = row_size
-        self.column_size = column_size
+        self.column_size = sum(every_class_size)
         self.memory = np.zeros([self.row_size, self.column_size])
         self.count = 0
         self.every_class_size = every_class_size
-        self.column_size = column_class
-        assert len(self.every_class_size) == self.column_size
+        self.column_class = column_class
+        assert len(self.every_class_size) == self.column_class
 
     def store(self,
               state=None,
@@ -50,6 +49,7 @@ class SimpleMatrixMemory(Memory):
               done=None,
               **kwargs):
         current_memory = np.hstack((state, action, reward, next_state, done))
+        assert len(current_memory) == self.column_size
         memory_index = self.count % self.row_size
         self.memory[memory_index, :] = current_memory
         self.count += 1
@@ -59,7 +59,7 @@ class SimpleMatrixMemory(Memory):
         mini_batch = self.memory[batch_index, :]
         split_batch = []
         slice_from = 0
-        for i in range(self.column_size):
+        for i in range(self.column_class):
             size = self.every_class_size[i]
             slice_to = slice_from + size
             b = mini_batch[:, slice_from:slice_to]
