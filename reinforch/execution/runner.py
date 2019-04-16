@@ -8,6 +8,10 @@ import time
 
 
 class Runner(object):
+    """
+    整个RL算法的执行器，通常是在入口文件中使用
+
+    """
 
     def __init__(self,
                  agent: Agent,

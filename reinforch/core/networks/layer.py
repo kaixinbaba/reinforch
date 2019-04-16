@@ -1,5 +1,6 @@
 """
-Collection of custom layer implementations.
+各种神经网络层的对象定义.
+
 """
 
 import torch
@@ -11,6 +12,10 @@ from reinforch.utils import util_from_config
 
 
 class Layer(nn.Module):
+    """
+    所有自定义网络层的父类对象，继承自nn.Module
+
+    """
 
     def __init__(self, name=None):
         super(Layer, self).__init__()

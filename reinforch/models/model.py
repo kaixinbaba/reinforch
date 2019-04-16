@@ -8,23 +8,55 @@ from reinforch.core.networks import Network
 
 
 class Model(object):
+    """
+    真正的算法模型对象，Agent大部分算法都委托给它来处理.
+
+    Model对象内部可以组合多个神经网络进行训练学习
+
+    """
+
     def __init__(self, **kwargs):
         pass
 
     def forward(self, x):
+        """
+        神经网络正向传播流程.
+
+        从输入到输出的过程
+        :param x: 整个模型的输入
+        :return: 整个模型的输出
+        """
         raise NotImplementedError
 
     def update(self, **kwargs):
+        """
+        神经网络反向传播流程, 由子类实现.
+
+        :param kwargs:
+        :return:
+        """
         raise NotImplementedError
 
     @staticmethod
     def from_config(config):
         pass
 
-    def save(self, dest=None):
+    def save(self, dest: str = None):
+        """
+        保存模型参数.
+
+        :param dest: 目标保存文件路径
+        """
+
         raise NotImplementedError
 
-    def load(self, dest=None):
+    def load(self, dest: str = None):
+        """
+        读取模型参数.
+
+        :param dest: 目标文件路径
+        """
+
         raise NotImplementedError
 
     def close(self):

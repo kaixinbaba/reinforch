@@ -1,3 +1,9 @@
+"""
+TODO
+SimpleMatrixMemory              v
+SumTree                         x
+
+"""
 from reinforch.core.memorys.memory import Memory, SimpleMatrixMemory
 
 memorys = dict(
