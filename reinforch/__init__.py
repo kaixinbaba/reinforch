@@ -1,8 +1,7 @@
 """reinforch - RL common framework implements by pytorch"""
 
 from reinforch.exception import ReinforchException
-import sys
 
-__version__ = '0.1.0'
-__author__ = 'JunjieXun <452914639@qq.com>'
+from .__version__ import __version__
+
 __all__ = ['ReinforchException']
