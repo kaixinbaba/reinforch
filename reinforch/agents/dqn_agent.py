@@ -41,6 +41,7 @@ class DQNAgent(Agent):
                  memory: Memory = None,
                  learn_threshold: int = None,
                  action_dim: int = None,
+                 is_prioritize: bool = True,
                  double_dqn: bool = True,
                  dueling_dqn: bool = True,
                  config: Union[str, dict, Config] = None):
@@ -61,6 +62,7 @@ class DQNAgent(Agent):
         :param memory: DQN算法用于存储训练样本的记忆库
         :param learn_threshold: 当memory存储数量大于该值时，模型开始学习
         :param action_dim: 动作选取区间值（该值取区间上限）仅当动作为连续有效
+        :param is_prioritize: 是否采用prioritize replay buffer作为记忆库
         :param double_dqn: 是否采用double dqn算法,减少Q-learning过估计问题
         :param dueling_dqn: 是否采用dueling dqn算法,使用优势函数替代Q值函数，以平衡动作和状态
         :param config: 是否采取配置初始化 TODO Agent对象也可以使用配置来初始化
@@ -83,6 +85,7 @@ class DQNAgent(Agent):
         self.learn_threshold = learn_threshold
         self.action_dim = action_dim
         self.continue_action = action_dim is not None
+        self.is_prioritize = is_prioritize
         self.double_dqn = double_dqn
         self.dueling_dqn = dueling_dqn
         self.model = self.init_model(in_size=self.n_s,
@@ -148,7 +151,9 @@ class DQNAgent(Agent):
 
     def _learn(self):
         # 从记忆库中采样训练数据
-        b_state, b_action, b_reward, b_next_state, b_done = self.memory.sample(self.batch_size)
+        memory_sample_result = self.memory.sample(self.batch_size)
+        b_state, b_action, b_reward, b_next_state, b_done = memory_sample_result['mini_batch']
+
         # 转成tensor对象
         b_state = o2t(b_state)
         b_action = o2t(b_action, target_type=LongTensor)
@@ -157,11 +162,20 @@ class DQNAgent(Agent):
         b_done = o2t(b_done)
 
         # 委托给model对象以更新网络参数
-        self.model.update(b_s=b_state,
+        abs_errors = self.model.update(b_s=b_state,
                           b_a=b_action,
                           b_r=b_reward,
                           b_s_=b_next_state,
                           b_done=b_done)
+        self._after_update(memory_sample_result=memory_sample_result,
+                           abs_errors=abs_errors)
+
+    def _after_update(self, *args, **kwargs):
+        if self.is_prioritize and kwargs.get('memory_sample_result') is not None:
+            memory_sample_result = kwargs.get('memory_sample_result')
+            tree_index = memory_sample_result['tree_index']
+            abs_errors = memory_sample_result['abs_errors']
+            self.memory.update(tree_index, abs_errors)
 
     def init_model(self, **kwargs):
         return DQNModel(**kwargs)

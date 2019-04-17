@@ -57,6 +57,17 @@ class Agent(object):
 
         raise NotImplementedError
 
+    def _after_update(self, *args, **kwargs):
+        """
+        模型更新后，钩子方法
+
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        raise NotImplementedError
+
     def close(self):
         """
         关闭智能体，释放资源等.

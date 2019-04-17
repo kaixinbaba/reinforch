@@ -109,6 +109,7 @@ class DQNModel(Model):
         next_max = next_actions.gather(1, next_max_action_index)
 
         target_q = b_r + self.gamma * next_max * (1 - b_done)
+        abs_errors = torch.sum(torch.abs(target_q - eval_q), dim=1).numpy()
         loss = self.loss(eval_q, target_q)
 
         self.optim.zero_grad()
@@ -116,6 +117,7 @@ class DQNModel(Model):
         self.optim.step()
 
         self._update_target_net()
+        return abs_errors
 
     def _normal_choose_max_action(self, b_s_):
         return self.target_net(b_s_).max(1)[1].unsqueeze(1)
