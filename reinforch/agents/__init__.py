@@ -12,7 +12,7 @@ DDPG                x
 D4PG                x
 """
 from reinforch.agents.agent import Agent
-from reinforch.agents.dqn_agent import DQNAgent
+from reinforch.agents.dqn_agent import DQNAgent, DoubleDQNAgent, DuelingDQNAgent
 
 agents = dict(
     dqn=DQNAgent,
