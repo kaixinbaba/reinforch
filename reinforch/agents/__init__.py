@@ -11,7 +11,8 @@ A2C                 x
 DDPG                x
 D4PG                x
 """
-from reinforch.agents.agent import Agent, DQNAgent
+from reinforch.agents.agent import Agent
+from reinforch.agents.dqn_agent import DQNAgent
 
 agents = dict(
     dqn=DQNAgent,
