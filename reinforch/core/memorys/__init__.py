@@ -10,5 +10,4 @@ memorys = dict(
     matrix=SimpleMatrixMemory,
 )
 
-
-__all__ = ['SimpleMatrixMemory', 'memorys']
+__all__ = ['SimpleMatrixMemory', 'memorys', 'Memory']
