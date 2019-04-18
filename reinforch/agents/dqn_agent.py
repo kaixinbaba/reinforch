@@ -191,6 +191,9 @@ class DQNAgent(Agent):
     def close(self):
         self.model.close()
 
+    def __str__(self):
+        return '<DQNAgent>'
+
 
 class DoubleDQNAgent(DQNAgent):
 

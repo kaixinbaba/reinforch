@@ -43,7 +43,8 @@ class Runner(object):
         self.save_dest_folder = save_dest_folder
         self.save_final_model = save_final_model
         self.overwritten = overwritten
-        self.save_path = os.path.join(self.save_dest_folder, '{}_{}.pkl')
+        self.save_file_name = '{}_{}_{{}}.pkl'.format(str(self.agent), str(self.environment))
+        self.save_path = os.path.join(self.save_dest_folder, self.save_file_name)
         if exists_model is not None:
             if os.path.exists(exists_model) and os.path.isfile(exists_model):
                 self.agent.load(exists_model)
@@ -82,19 +83,22 @@ class Runner(object):
                                 info=info)
                 if episode % self.save_episode == 0:
                     # save model
-                    self.__save(self.save_path.format(str(self.environment), episode))
+                    self.__save(self.save_path.format(episode))
                 if done:
                     break
                 state = next_state
             if episode == self.total_episode and self.save_final_model:
                 # save final model
-                self.__save(self.save_path.format(str(self.environment), 'last'))
+                self.__save(self.save_path.format('last'))
             cost_time = time.time() - episode_start_time
             self.log.debug('>> {} episode, reward : {}, cost time : {}'.format(episode, episode_reward, cost_time))
 
     def __save(self, path):
         if not os.path.exists(path) or (os.path.exists(path) and not self.overwritten):
             self.agent.save(path)
+
+    def __load(self, suffix='last'):
+        pass
 
     def test(self):
         pass

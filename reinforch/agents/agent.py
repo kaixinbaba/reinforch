@@ -94,4 +94,5 @@ class Agent(object):
 
         raise NotImplementedError
 
-
+    def __str__(self):
+        raise NotImplementedError
