@@ -109,7 +109,7 @@ class DQNModel(Model):
         next_max = next_actions.gather(1, next_max_action_index)
 
         target_q = b_r + self.gamma * next_max * (1 - b_done)
-        abs_errors = torch.sum(torch.abs(target_q - eval_q), dim=1).numpy()
+        abs_errors = torch.sum(torch.abs(target_q - eval_q), dim=1).detach().numpy()
         loss = self.loss(eval_q, target_q)
 
         self.optim.zero_grad()
@@ -140,3 +140,24 @@ class DQNModel(Model):
         else:
             if self.learn_count % self.c_step == 0:
                 self._hard_update()
+
+    def save(self, dest: str = 'dqn_model.pkl'):
+        """
+        保存整个网络的模型及参数
+
+        :param dest:
+        :return:
+        """
+
+        torch.save(self.eval_network, dest)
+
+    def load(self, dest: str = 'dqn_model.pkl'):
+        """
+        读取文件加载网络的模型及参数
+
+        :param dest:
+        :return:
+        """
+
+        self.eval_network = torch.load(dest)
+        self.target_net = deepcopy(self.eval_network)

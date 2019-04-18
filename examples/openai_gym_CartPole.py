@@ -37,5 +37,8 @@ if __name__ == '__main__':
     with Runner(agent=agent,
                 environment=env,
                 total_episode=500,
-                max_step_in_one_episode=1000) as runner:
+                max_step_in_one_episode=1000,
+                save_episode=100,
+                save_dest_folder='gym_cartpole_save_point',
+                verbose=True) as runner:
         runner.train()

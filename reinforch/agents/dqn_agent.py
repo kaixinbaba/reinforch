@@ -152,7 +152,7 @@ class DQNAgent(Agent):
     def _learn(self):
         # 从记忆库中采样训练数据
         memory_sample_result = self.memory.sample(self.batch_size)
-        b_state, b_action, b_reward, b_next_state, b_done = memory_sample_result['mini_batch']
+        b_state, b_action, b_reward, b_next_state, b_done = memory_sample_result.pop('mini_batch')
 
         # 转成tensor对象
         b_state = o2t(b_state)
@@ -163,18 +163,20 @@ class DQNAgent(Agent):
 
         # 委托给model对象以更新网络参数
         abs_errors = self.model.update(b_s=b_state,
-                          b_a=b_action,
-                          b_r=b_reward,
-                          b_s_=b_next_state,
-                          b_done=b_done)
+                                       b_a=b_action,
+                                       b_r=b_reward,
+                                       b_s_=b_next_state,
+                                       b_done=b_done)
         self._after_update(memory_sample_result=memory_sample_result,
                            abs_errors=abs_errors)
 
     def _after_update(self, *args, **kwargs):
-        if self.is_prioritize and kwargs.get('memory_sample_result') is not None:
-            memory_sample_result = kwargs.get('memory_sample_result')
+        memory_sample_result = kwargs.get('memory_sample_result')
+        if self.is_prioritize and memory_sample_result is not None \
+                and memory_sample_result.get('tree_index') is not None \
+                and kwargs.get('abs_errors') is not None:
             tree_index = memory_sample_result['tree_index']
-            abs_errors = memory_sample_result['abs_errors']
+            abs_errors = kwargs.get('abs_errors')
             self.memory.update(tree_index, abs_errors)
 
     def init_model(self, **kwargs):
