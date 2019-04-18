@@ -23,6 +23,7 @@ class Runner(object):
                  save_dest_folder: str = '.',
                  exists_model: str = None,
                  overwritten: bool = True,
+                 save_final_model : bool = True,
                  verbose=False):
         self.log = Log(__name__, level=DEBUG) if verbose else Log(__name__, level=INFO)
         self.agent = agent
@@ -40,6 +41,7 @@ class Runner(object):
             # 传入的不是目录，使用当前目录
             save_dest_folder = '.'
         self.save_dest_folder = save_dest_folder
+        self.save_final_model = save_final_model
         self.overwritten = overwritten
         self.save_path = os.path.join(self.save_dest_folder, '{}_{}.pkl')
         if exists_model is not None:
@@ -80,14 +82,22 @@ class Runner(object):
                                 info=info)
                 if episode % self.save_episode == 0:
                     # save model
-                    _save_path = self.save_path.format(str(self.environment), episode)
-                    if not os.path.exists(_save_path) or (os.path.exists(_save_path) and not self.overwritten):
-                        self.agent.save(_save_path)
+                    self.__save(self.save_path.format(str(self.environment), episode))
                 if done:
                     break
                 state = next_state
+            if episode == self.total_episode and self.save_final_model:
+                # save final model
+                self.__save(self.save_path.format(str(self.environment), 'last'))
             cost_time = time.time() - episode_start_time
             self.log.debug('>> {} episode, reward : {}, cost time : {}'.format(episode, episode_reward, cost_time))
+
+    def __save(self, path):
+        if not os.path.exists(path) or (os.path.exists(path) and not self.overwritten):
+            self.agent.save(path)
+
+    def test(self):
+        pass
 
     def __enter__(self):
         return self
