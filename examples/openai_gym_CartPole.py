@@ -2,6 +2,9 @@ from reinforch.agents import DQNAgent
 from reinforch.core.memorys import SimpleMatrixMemory
 from reinforch.environments import OpenAIGym
 from reinforch.execution import Runner
+from reinforch.core.logger import Log, INFO
+
+logger = Log(__name__, level=INFO)
 
 if __name__ == '__main__':
 
@@ -12,7 +15,7 @@ if __name__ == '__main__':
         reward = r1 + r2
         return reward
 
-    env = OpenAIGym('CartPole-v0', visualize=False, reward_shape=cartpole_reward_shape)
+    env = OpenAIGym('CartPole-v0', reward_shape=cartpole_reward_shape)
     env.seed(7)
     n_s = env.n_s
     n_a = env.n_a
@@ -36,9 +39,15 @@ if __name__ == '__main__':
                      config='configs/openai_gym_CartPole.json')
     with Runner(agent=agent,
                 environment=env,
-                total_episode=500,
-                max_step_in_one_episode=1000,
-                save_episode=100,
                 save_dest_folder='gym_cartpole_save_point',
+
                 verbose=True) as runner:
-        runner.train()
+        runner.train(total_episode=500,
+                     max_step_in_one_episode=1000,
+                     save_episode=100,
+                     save_final_model=True,
+                     visualize=False)
+        logger.info('The agent has completed its training...')
+
+        runner.test(visualize=True)
+

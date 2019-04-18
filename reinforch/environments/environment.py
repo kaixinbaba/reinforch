@@ -45,6 +45,14 @@ class Environment(object):
         raise NotImplementedError
 
     @property
+    def visualize(self):
+        return self._visualize
+
+    @visualize.setter
+    def visualize(self, visualize):
+        self._visualize = visualize
+
+    @property
     def n_s(self):
         return self.states.get('shape')[0]
 

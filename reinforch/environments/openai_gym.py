@@ -22,7 +22,7 @@ class OpenAIGym(Environment):
                  monitor_safe=False,
                  monitor_video=0,
                  visualize=False,
-                 reward_shape=None): # TODO a reward object
+                 reward_shape=None):  # TODO a reward object
         """
         Initialize OpenAI Gym.
 
@@ -37,7 +37,7 @@ class OpenAIGym(Environment):
 
         self.gym_id = gym_id
         self.gym = gym.make(gym_id)  # Might raise gym.error.UnregisteredEnv or gym.error.DeprecatedEnv
-        self.visualize = visualize
+        self._visualize = visualize
         self.reward_shape = reward_shape
 
         if monitor:
