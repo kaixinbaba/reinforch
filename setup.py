@@ -23,7 +23,7 @@ setup(
     author_email="452914639@qq.com",
 
     description="RL common framework implements by pytorch",
-    long_description=read("README.rst"),
+    long_description=read("README.md"),
 
     packages=find_packages(exclude=('tests',)),
 

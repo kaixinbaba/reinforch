@@ -16,10 +16,11 @@ Reinforcement learning + pytorch \
 - [ ] 待补充
 
 ## Installation(由于还未实现大部分算法，所以还没有上传至pypi)
+方式1：pypi
 ```
 pip install reinforch
 ```
-或者可以从源码安装
+方式2：从源码安装
 ```
 git clone https://github.com/kaixinbaba/reinforch.git
 cd reinforch
@@ -33,8 +34,12 @@ pip install -r requirements.txt
 ## Review demo
 ### DQN
 ```
-cd reinforch
-python examples openai_gym_CartPole.py
+# 运行之前先根据上面的提示install
+git clone https://github.com/kaixinbaba/reinforch.git
+cd reinforch/examples
+python openai_gym_CartPole.py
+# or
+python openai_gym_MountainCar.py
 ```
 ### PolicyGradient
 ### DDPG

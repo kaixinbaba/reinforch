@@ -98,7 +98,7 @@ class Runner(object):
             cost_time = time.time() - episode_start_time
             self.log.debug('[train] {} episode, reward : {}, cost time : {}'.format(episode, episode_reward, cost_time))
 
-    def test(self, total_episode: int = 5, max_step_in_one_episode: int = None, suffix='last', visualize=True):
+    def test(self, total_episode: int = 1, max_step_in_one_episode: int = None, suffix='last', visualize=True):
         self.environment.visualize = visualize
         self.__load(suffix)
         for episode in tqdm(range(1, total_episode + 1), ncols=100):
