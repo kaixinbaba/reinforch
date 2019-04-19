@@ -34,6 +34,7 @@ setup(
         'pytest>=3.6.4',
         'logbook',
         'numpy>=1.16.2',
+        'fire>=0.1.3',
     ],
 
     classifiers=[

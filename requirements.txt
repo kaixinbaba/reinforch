@@ -4,3 +4,4 @@ torch>=1.0.0
 tqdm>=4.31.1
 Logbook>=1.4.3
 numpy>=1.16.2
+fire>=0.1.3
