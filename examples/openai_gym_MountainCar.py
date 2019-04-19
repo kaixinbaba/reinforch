@@ -1,6 +1,6 @@
 from reinforch.agents import DQNAgent
 from reinforch.core.logger import Log, INFO
-from reinforch.core.memorys import SimpleMatrixMemory
+from reinforch.core.memorys import PrioritizeMemory
 from reinforch.environments import OpenAIGym
 from reinforch.execution import Runner
 
@@ -8,29 +8,33 @@ logger = Log(__name__, level=INFO)
 
 if __name__ == '__main__':
     def reward_shape(state=None, reward=None, terminal=None, env=None):
-        x, x_dot, theta, theta_dot = state
-        r1 = (env.x_threshold - abs(x)) / env.x_threshold - 0.8
-        r2 = (env.theta_threshold_radians - abs(theta)) / env.theta_threshold_radians - 0.5
-        reward = r1 + r2
+        position, velocity = state
+        reward = abs(position - (-0.5))
         return reward
 
 
-    env = OpenAIGym('CartPole-v0', reward_shape=reward_shape)
+    def reward_shape2(state=None, reward=None, terminal=None, env=None):
+        if terminal:
+            reward = 10
+        return reward
+
+
+    env = OpenAIGym('MountainCar-v0', reward_shape=reward_shape2)
     env.seed(7)
     n_s = env.n_s
     n_a = env.n_a
-    memory = SimpleMatrixMemory(row_size=2000, every_class_size=[n_s, 1, 1, n_s, 1])
+    memory = PrioritizeMemory(capacity=2000,
+                              every_class_size=[n_s, 1, 1, n_s, 1])
+
     agent = DQNAgent(n_s=n_s,
                      n_a=n_a,
                      memory=memory,
-                     config='configs/openai_gym_CartPole.json')
+                     config='configs/openai_gym_MountainCar.json')
     with Runner(agent=agent,
                 environment=env,
-                save_dest_folder='gym_cartpole_save_point',
+                save_dest_folder='gym_mountaincar_save_point',
                 verbose=True) as runner:
-        runner.train(total_episode=500,
-                     max_step_in_one_episode=1000,
-                     save_episode=100,
+        runner.train(total_episode=5,
                      save_final_model=True,
                      visualize=False)
 

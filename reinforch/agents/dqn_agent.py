@@ -5,7 +5,7 @@ import numpy as np
 from reinforch.agents import Agent
 from reinforch.core.configs import Config
 from reinforch.core.logger import Log
-from reinforch.core.memorys import Memory
+from reinforch.core.memorys import Memory, PrioritizeMemory
 from reinforch.models import DQNModel
 from reinforch.utils import o2t, LongTensor
 
@@ -41,7 +41,6 @@ class DQNAgent(Agent):
                  memory: Memory = None,
                  learn_threshold: int = None,
                  action_dim: int = None,
-                 is_prioritize: bool = True,
                  double_dqn: bool = True,
                  dueling_dqn: bool = True,
                  config: Union[str, dict, Config] = None):
@@ -62,7 +61,6 @@ class DQNAgent(Agent):
         :param memory: DQN算法用于存储训练样本的记忆库
         :param learn_threshold: 当memory存储数量大于该值时，模型开始学习
         :param action_dim: 动作选取区间值（该值取区间上限）仅当动作为连续有效
-        :param is_prioritize: 是否采用prioritize replay buffer作为记忆库
         :param double_dqn: 是否采用double dqn算法,减少Q-learning过估计问题
         :param dueling_dqn: 是否采用dueling dqn算法,使用优势函数替代Q值函数，以平衡动作和状态
         :param config: 是否采取配置初始化 TODO Agent对象也可以使用配置来初始化
@@ -85,7 +83,7 @@ class DQNAgent(Agent):
         self.learn_threshold = learn_threshold
         self.action_dim = action_dim
         self.continue_action = action_dim is not None
-        self.is_prioritize = is_prioritize
+        self.is_prioritize = isinstance(self.memory, PrioritizeMemory)
         self.double_dqn = double_dqn
         self.dueling_dqn = dueling_dqn
         self.model = self.init_model(in_size=self.n_s,

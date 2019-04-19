@@ -36,7 +36,7 @@ class OpenAIGym(Environment):
         """
 
         self.gym_id = gym_id
-        self.gym = gym.make(gym_id)  # Might raise gym.error.UnregisteredEnv or gym.error.DeprecatedEnv
+        self.gym = gym.make(gym_id).unwrapped  # Might raise gym.error.UnregisteredEnv or gym.error.DeprecatedEnv
         self._visualize = visualize
         self.reward_shape = reward_shape
 

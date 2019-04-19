@@ -5,8 +5,13 @@ import numpy as np
 
 class Memory(object):
 
-    def __init__(self):
-        pass
+    def __init__(self,
+                 every_class_size: Union[List[int], Tuple[int]] = None,
+                 column_class: int = 5):
+        self.column_size = sum(every_class_size) if every_class_size else 0
+        self.every_class_size = every_class_size
+        self.column_class = column_class
+        assert len(self.every_class_size) == self.column_class
 
     def store(self, **kwargs):
         """
@@ -37,6 +42,17 @@ class Memory(object):
 
         raise NotImplementedError
 
+    def _column_split(self, mini_batch):
+        split_batch = []
+        slice_from = 0
+        for i in range(self.column_class):
+            size = self.every_class_size[i]
+            slice_to = slice_from + size
+            b = mini_batch[:, slice_from:slice_to]
+            split_batch.append(b)
+            slice_from = slice_to
+        return split_batch
+
 
 class SimpleMatrixMemory(Memory):
     """
@@ -55,16 +71,13 @@ class SimpleMatrixMemory(Memory):
 
     def __init__(self,
                  row_size,
-                 every_class_size: Union[List[int], Tuple[int]],
+                 every_class_size: Union[List[int], Tuple[int]] = None,
                  column_class: int = 5):
-        super(SimpleMatrixMemory, self).__init__()
+        super(SimpleMatrixMemory, self).__init__(every_class_size=every_class_size,
+                                                 column_class=column_class)
         self.row_size = row_size
-        self.column_size = sum(every_class_size)
         self.memory = np.zeros([self.row_size, self.column_size])
         self.count = 0
-        self.every_class_size = every_class_size
-        self.column_class = column_class
-        assert len(self.every_class_size) == self.column_class
 
     def store(self,
               state=None,
@@ -82,15 +95,7 @@ class SimpleMatrixMemory(Memory):
     def sample(self, batch_size):
         batch_index = np.random.choice(self.row_size, batch_size)
         mini_batch = self.memory[batch_index, :]
-        split_batch = []
-        slice_from = 0
-        for i in range(self.column_class):
-            size = self.every_class_size[i]
-            slice_to = slice_from + size
-            b = mini_batch[:, slice_from:slice_to]
-            split_batch.append(b)
-            slice_from = slice_to
-        return {'mini_batch': split_batch}
+        return {'mini_batch': self._column_split(mini_batch)}
 
     def __len__(self):
         return self.count
@@ -163,9 +168,10 @@ class SumTree(object):
         return leaf_idx, self.tree[leaf_idx], self.data[data_idx]
 
     def __len__(self):
-        return self.tree[0]
+        return int(self.tree[0])
 
-class ProritizeMemory(Memory):  # stored as ( s, a, r, s_ ) in SumTree
+
+class PrioritizeMemory(Memory):  # stored as ( s, a, r, s_ ) in SumTree
     """
     This Memory class is modified based on the original code from:
     https://github.com/jaara/AI-blog/blob/master/Seaquest-DDQN-PER.py
@@ -176,12 +182,19 @@ class ProritizeMemory(Memory):  # stored as ( s, a, r, s_ ) in SumTree
     beta_increment_per_sampling = 0.001
     abs_err_upper = 1.  # clipped abs error
 
-    def __init__(self, capacity, e, a, b):
-        super(ProritizeMemory, self).__init__()
+    def __init__(self, capacity,
+                 every_class_size: Union[List[int], Tuple[int]] = None,
+                 e=0.01,
+                 a=0.6,
+                 b=0.4,
+                 column_class: int = 5):
+        super(PrioritizeMemory, self).__init__(every_class_size=every_class_size,
+                                               column_class=column_class)
         self.tree = SumTree(capacity)
         self.epsilon = e
         self.alpha = a
         self.beta = b
+        self.column_class = column_class
 
     def store(self,
               state=None,
@@ -190,7 +203,7 @@ class ProritizeMemory(Memory):  # stored as ( s, a, r, s_ ) in SumTree
               next_state=None,
               done=None,
               **kwargs):
-        transition = np.hstack((state, [action, reward], next_state))
+        transition = np.hstack((state, [action, reward], next_state, done))
         max_p = np.max(self.tree.tree[-self.tree.capacity:])
         if max_p == 0:
             max_p = self.abs_err_upper
@@ -209,7 +222,8 @@ class ProritizeMemory(Memory):  # stored as ( s, a, r, s_ ) in SumTree
             v = np.random.uniform(a, b)
             idx, p, data = self.tree.get_leaf(v)
             b_idx[i], b_memory[i, :] = idx, data
-        return {'tree_index': b_idx, 'mini_batch': b_memory}
+
+        return {'tree_index': b_idx, 'mini_batch': self._column_split(b_memory)}
 
     def update(self, tree_idx, abs_errors):
         abs_errors += self.epsilon  # convert to abs and avoid 0

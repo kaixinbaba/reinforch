@@ -4,10 +4,11 @@ SimpleMatrixMemory              v
 SumTree                         x
 
 """
-from reinforch.core.memorys.memory import Memory, SimpleMatrixMemory
+from reinforch.core.memorys.memory import Memory, SimpleMatrixMemory, PrioritizeMemory
 
 memorys = dict(
     matrix=SimpleMatrixMemory,
+    prioritize=PrioritizeMemory,
 )
 
-__all__ = ['SimpleMatrixMemory', 'memorys', 'Memory']
+__all__ = ['PrioritizeMemory', 'SimpleMatrixMemory', 'memorys', 'Memory']
