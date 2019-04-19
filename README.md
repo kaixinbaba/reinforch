@@ -11,8 +11,9 @@ Reinforcement learning + pytorch \
 - [ ] A3C
 - [ ] A2C
 - [ ] PPO
+- [ ] TRPO
 - [ ] D4PG
-- 待补充
+- [ ] 待补充
 
 ## Installation(由于还未实现大部分算法，所以还没有上传至pypi)
 ```
@@ -24,12 +25,24 @@ git clone https://github.com/kaixinbaba/reinforch.git
 cd reinforch
 python setup.py install
 ```
+## Requirements
+```
+cd reinforch
+pip install -r requirements.txt
+```
 ## Review demo
 ### DQN
 ```
 cd reinforch
 python examples openai_gym_CartPole.py
 ```
+### PolicyGradient
+### DDPG
+### A2C
+### A3C
+### PPO
+### TRPO
+### D4PG
 
 ## Authors
 `reinforch` was written by `JunjieXun <452914639@qq.com>`.
