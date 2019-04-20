@@ -1,9 +1,11 @@
 import os
 import time
+from typing import Union, List, Tuple
 
 from tqdm import tqdm
 
 from reinforch.agents import Agent
+from reinforch.callbacks import CallBack, CallBackList
 from reinforch.core.logger import Log, INFO, DEBUG
 from reinforch.environments import Environment
 from reinforch.exception import ReinforchException
@@ -21,6 +23,7 @@ class Runner(object):
                  save_dest_folder: str = '.',
                  exists_model: str = None,
                  overwritten: bool = True,
+                 callbacks: Union[CallBack, List[CallBack], Tuple[CallBack]] = None,
                  verbose=False):
         self.log = Log(__name__, level=DEBUG) if verbose else Log(__name__, level=INFO)
         self.agent = agent
@@ -41,6 +44,9 @@ class Runner(object):
             else:
                 self.log.warn('specified path [{}] is incorrect model file'.format(exists_model))
         self.current_episode = 1
+        self.callback = CallBackList(logger=self.log)
+        if callbacks is not None:
+            self.callback.register_callback(callbacks)
         self.reset()
 
     def reset(self):
@@ -71,13 +77,18 @@ class Runner(object):
                 max_step_in_one_episode=max_step_in_one_episode,
             ))
         for episode in tqdm(range(1, total_episode + 1), ncols=100):
+            self.callback.episode_begin(episode)
             episode_start_time = time.time()
             state = self.environment.reset()
+            self.callback.after_environment_reset(episode, state)
             episode_reward = 0
             step = 0
             while True:
+                self.callback.before_agent_action(step, state)
                 action = self.agent.act(state)
+                self.callback.after_agent_action(step, state, action)
                 next_state, reward, done, info = self.environment.execute(action=action)
+                self.callback.after_environment_execute(step, state, action, reward, next_state, done, info)
                 episode_reward += reward
                 self.agent.step(state=state,
                                 action=action,
@@ -96,7 +107,7 @@ class Runner(object):
                 # save final model
                 self.__save(self.save_path.format('last'))
             cost_time = time.time() - episode_start_time
-            self.log.debug('[train] {} episode, reward : {}, cost time : {}'.format(episode, episode_reward, cost_time))
+            self.callback.episode_end(episode, episode_reward, cost_time)
 
     def test(self, total_episode: int = 1, max_step_in_one_episode: int = None, suffix='last', visualize=True):
         self.environment.visualize = visualize

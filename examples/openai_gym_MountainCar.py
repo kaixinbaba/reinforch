@@ -33,7 +33,7 @@ if __name__ == '__main__':
     with Runner(agent=agent,
                 environment=env,
                 save_dest_folder='gym_mountaincar_save_point',
-                verbose=True) as runner:
+                verbose=False) as runner:
         runner.train(total_episode=5,
                      save_final_model=True,
                      visualize=False)
