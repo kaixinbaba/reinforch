@@ -7,6 +7,7 @@ from reinforch.core.configs import Config
 from reinforch.core.logger import Log
 from reinforch.core.memorys import Memory, PrioritizeMemory
 from reinforch.models import DQNModel
+from reinforch.exception import ReinforchException
 from reinforch.utils import o2t, LongTensor
 
 logging = Log(__name__)
@@ -43,6 +44,7 @@ class DQNAgent(Agent):
                  action_dim: int = None,
                  double_dqn: bool = True,
                  dueling_dqn: bool = True,
+                 rainbow: bool = True,
                  config: Union[str, dict, Config] = None):
         """
 
@@ -84,8 +86,15 @@ class DQNAgent(Agent):
         self.action_dim = action_dim
         self.continue_action = action_dim is not None
         self.is_prioritize = isinstance(self.memory, PrioritizeMemory)
-        self.double_dqn = double_dqn
-        self.dueling_dqn = dueling_dqn
+        # TODO rainbow实现的有点差
+        if rainbow and not self.is_prioritize:
+            raise ReinforchException('If use "rainbow" model, memory must be "PrioritizeMemory" type')
+        if rainbow:
+            self.double_dqn = True
+            self.dueling_dqn = True
+        else:
+            self.double_dqn = double_dqn
+            self.dueling_dqn = dueling_dqn
         self.model = self.init_model(in_size=self.n_s,
                                      out_size=self.n_a,
                                      last_scale=action_dim,
