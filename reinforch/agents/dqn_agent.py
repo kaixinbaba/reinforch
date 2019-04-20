@@ -192,16 +192,3 @@ class DQNAgent(Agent):
     def __str__(self):
         return '<DQNAgent>'
 
-
-class DoubleDQNAgent(DQNAgent):
-
-    def __init__(self, *args, **kwargs):
-        super(DoubleDQNAgent, self).__init__(*args, **kwargs)
-        self.double_dqn = True
-
-
-class DuelingDQNAgent(DQNAgent):
-
-    def __init__(self, *args, **kwargs):
-        super(DuelingDQNAgent, self).__init__(*args, **kwargs)
-        self.dueling_dqn = True
