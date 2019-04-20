@@ -41,7 +41,7 @@ python openai_gym_CartPole.py
 # or
 python openai_gym_MountainCar.py
 ```
-### PolicyGradient
+### PG
 ### DDPG
 ### A2C
 ### A3C
