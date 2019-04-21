@@ -6,7 +6,7 @@ Reinforcement learning + pytorch \
 一个使用pytorch实现的强化学习通用框架
 ## TODO Algorithm list
 - [x] DQN [Human-level control through deep reinforcement learning](https://www.nature.com/articles/nature14236)
-- [ ] PG 
+- [x] PG 
 - [ ] DDPG
 - [ ] A3C
 - [ ] A2C
@@ -32,16 +32,21 @@ cd reinforch
 pip install -r requirements.txt
 ```
 ## Review demo
+运行之前先根据上面的提示install并切换到examples目录
+
 ### DQN
 ```
-# 运行之前先根据上面的提示install
-git clone https://github.com/kaixinbaba/reinforch.git
-cd reinforch/examples
-python openai_gym_CartPole.py
+python dqn_CartPole.py
 # or
-python openai_gym_MountainCar.py
+python dqn_MountainCar.py
 ```
 ### PG
+```
+python pg_CartPole.py
+# or
+python pg_MountainCar_Continuous.py
+```
+### AC
 ### DDPG
 ### A2C
 ### A3C

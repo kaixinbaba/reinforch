@@ -11,9 +11,6 @@ branches:
 
 install:
   - pip install -r requirements.txt
-  - pip install torch
-  - pip install gym
-  - pip install .
 
 script:
   - pytest
