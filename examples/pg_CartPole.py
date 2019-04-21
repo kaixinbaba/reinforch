@@ -38,4 +38,4 @@ if __name__ == '__main__':
 
         logger.info('The agent has completed its training...')
 
-        runner.test(visualize=True)
+        runner.test(total_episode=10, visualize=True)
