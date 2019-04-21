@@ -44,7 +44,7 @@ class DQNAgent(Agent):
                  action_dim: int = None,
                  double_dqn: bool = True,
                  dueling_dqn: bool = True,
-                 rainbow: bool = True,
+                 rainbow: bool = False,
                  config: Union[str, dict, Config] = None):
         """
 
