@@ -149,7 +149,7 @@ class DQNModel(Model):
         :return:
         """
 
-        torch.save(self.eval_network, dest)
+        torch.save(self.eval_network.state_dict(), dest)
 
     def load(self, dest: str = 'dqn_model.pkl'):
         """
@@ -159,7 +159,7 @@ class DQNModel(Model):
         :return:
         """
 
-        self.eval_network = torch.load(dest)
+        self.eval_network.load_state_dict(torch.load(dest))
         self.target_net = deepcopy(self.eval_network)
 
 
@@ -205,7 +205,7 @@ class PolicyGradientModel(Model):
         :return:
         """
 
-        torch.save(self.network, dest)
+        torch.save(self.network.state_dict(), dest)
 
     def load(self, dest: str = None):
         """
@@ -215,4 +215,4 @@ class PolicyGradientModel(Model):
         :return:
         """
 
-        self.network = torch.load(dest)
+        self.network.load_state_dict(torch.load(dest))

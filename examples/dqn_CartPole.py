@@ -21,7 +21,7 @@ if __name__ == '__main__':
     env.seed(7)
     n_s = env.n_s
     n_a = env.n_a
-    memory = SimpleMatrixMemory(row_size=2000, every_class_size=[n_s, 1, 1, n_s, 1])
+    memory = SimpleMatrixMemory(row_size=3000, every_class_size=[n_s, 1, 1, n_s, 1])
     agent = DQNAgent(n_s=n_s,
                      n_a=n_a,
                      memory=memory,
@@ -30,11 +30,11 @@ if __name__ == '__main__':
                 environment=env,
                 save_dest_folder=default_save_folder('dqn', gym_id),
                 verbose=False) as runner:
-        runner.train(total_episode=500,
-                     max_step_in_one_episode=1000,
-                     save_episode=100,
-                     save_final_model=True,
-                     visualize=False)
+        # runner.train(total_episode=500,
+        #              max_step_in_one_episode=1000,
+        #              save_episode=100,
+        #              save_final_model=True,
+        #              visualize=False)
 
         logger.info('The agent has completed its training...')
 
