@@ -100,6 +100,7 @@ class Runner(object):
                     # save model
                     self.__save(self.save_path.format(episode))
                 if done or (max_step_in_one_episode is not None and step == max_step_in_one_episode):
+                    self.agent.after_done()
                     break
                 state = next_state
                 step += 1

@@ -44,7 +44,7 @@ class DQNAgent(Agent):
                  action_dim: int = None,
                  double_dqn: bool = True,
                  dueling_dqn: bool = True,
-                 rainbow: bool = True,
+                 rainbow: bool = False,
                  config: Union[str, dict, Config] = None):
         """
 
@@ -137,7 +137,7 @@ class DQNAgent(Agent):
                     or len(self.memory) > self.batch_size
         if not can_learn:
             return
-        self._learn()
+        self.learn()
         self._update_epsilon()
 
     def _update_epsilon(self):
@@ -156,7 +156,7 @@ class DQNAgent(Agent):
         else:
             self.epsilon = epsilon
 
-    def _learn(self):
+    def learn(self):
         # 从记忆库中采样训练数据
         memory_sample_result = self.memory.sample(self.batch_size)
         b_state, b_action, b_reward, b_next_state, b_done = memory_sample_result.pop('mini_batch')

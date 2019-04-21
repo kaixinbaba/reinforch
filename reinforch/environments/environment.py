@@ -72,7 +72,13 @@ class Environment(object):
 
     @property
     def n_a(self):
-        return self.actions.get('num_actions')
+        if self.actions.get('num_actions') is not None:
+            # 离散
+            return self.actions.get('num_actions')
+        else:
+            # 连续
+            return self.actions.get('shape')[0]
+
 
     @property
     def actions(self):

@@ -75,7 +75,7 @@ def from_config(config: Union[str, dict, Config], predefine: dict = None, defaul
 def obj2tensor(obj, feed_network: bool = True, target_type=FloatTensor, target_shape: Union[list, tuple] = None):
     """
     :param obj:
-    :param feed_network: if True, reshape tensor to matrix
+    :param feed_network: if True, reshape tensor to matrix, FIXME 当卷积网络的时候 shape不应该是2维的
     :param target_type: Cast to which type tensor
     :param target_shape
     :return:

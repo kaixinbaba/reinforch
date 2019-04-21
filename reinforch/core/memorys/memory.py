@@ -21,9 +21,9 @@ class Memory(object):
         :return:
         """
 
-        pass
+        raise NotImplementedError
 
-    def sample(self, batch_size) -> dict:
+    def sample(self, batch_size=None) -> dict:
         """
         从数据库采样batch_size个数据
 
@@ -92,7 +92,7 @@ class SimpleMatrixMemory(Memory):
         self.memory[memory_index, :] = current_memory
         self.count += 1
 
-    def sample(self, batch_size):
+    def sample(self, batch_size=None):
         batch_index = np.random.choice(self.row_size, batch_size)
         mini_batch = self.memory[batch_index, :]
         return {'mini_batch': self._column_split(mini_batch)}
@@ -209,7 +209,7 @@ class PrioritizeMemory(Memory):  # stored as ( s, a, r, s_ ) in SumTree
             max_p = self.abs_err_upper
         self.tree.add(max_p, transition)  # set the max p for new p
 
-    def sample(self, batch_size):
+    def sample(self, batch_size=None):
         b_idx, b_memory, _ = np.empty((batch_size,), dtype=np.int32), \
                              np.empty((batch_size, self.tree.data[0].size)), \
                              np.empty(
@@ -234,3 +234,31 @@ class PrioritizeMemory(Memory):  # stored as ( s, a, r, s_ ) in SumTree
 
     def __len__(self):
         return len(self.tree)
+
+
+class PGMemory(object):
+
+    def __init__(self):
+        self.states = []
+        self.actions = []
+        self.rewards = []
+
+    def store(self,
+              state=None,
+              action=None,
+              reward=None,
+              **kwargs):
+        self.states.append(state)
+        self.actions.append(action)
+        self.rewards.append(reward)
+
+    def sample(self, batch_size=None) -> dict:
+        mini_batch = [np.vstack(self.states), np.vstack(self.actions), np.vstack(self.rewards)]
+        result = {'mini_batch': mini_batch}
+        self.states.clear()
+        self.rewards.clear()
+        self.actions.clear()
+        return result
+
+    def __len__(self):
+        return len(self.states)

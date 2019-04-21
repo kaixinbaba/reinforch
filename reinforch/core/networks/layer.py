@@ -62,7 +62,7 @@ class Dense(Layer):
 
     def __init__(self, in_size, out_size, name=None, bias=True, nonlinear='relu'):
         super(Dense, self).__init__(name=name)
-        self.nonlinear_layer = Nonlinearity(nonlinear)
+        self.nonlinear_layer = Nonlinearity(nonlinear=nonlinear)
         self.linear_layer = Linear(in_size=in_size, out_size=out_size, bias=bias)
 
     def forward(self, x):
@@ -129,13 +129,14 @@ class Nonlinearity(Layer):
     )
 
     def __init__(self, name=None, nonlinear='relu'):
+        super(Nonlinearity, self).__init__(name=name)
         self.layer = self.nonlinear_layers.get(nonlinear)
         if self.layer is None:
             raise ReinforchException('Unknown nonlinear type "{}"'.format(nonlinear))
-        super(Nonlinearity, self).__init__(name=name)
 
     def forward(self, x):
-        return self.layer(x)
+        x = self.layer(x)
+        return x
 
 
 class Dropout(Layer):

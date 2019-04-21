@@ -161,3 +161,58 @@ class DQNModel(Model):
 
         self.eval_network = torch.load(dest)
         self.target_net = deepcopy(self.eval_network)
+
+
+class PolicyGradientModel(Model):
+
+    def __init__(self,
+                 in_size=None,
+                 out_size=None,
+                 last_scale=None,
+                 lr=0.001,
+                 gamma=0.99,
+                 config=None):
+        super(PolicyGradientModel, self).__init__()
+        self.in_size = in_size
+        self.out_size = out_size
+        self.last_scale = last_scale
+        self.lr = lr
+        self.gamma = gamma
+        self.learn_count = 0
+        self.network = Network.from_config(config=config)
+        self.optim = optimize.Adam(self.network.parameters(), lr=lr)
+
+    def forward(self, x):
+        return self.network(x)
+
+    def update(self, states=None, actions=None, rewards=None):
+        if self.last_scale is None:
+            actions_prop = self.network(states)
+            actions = torch.gather(actions_prop, 1, actions)
+        else:
+            actions = self.network(states)
+            # actions = actions
+        loss = torch.mean(-torch.log(actions) * rewards)
+        self.optim.zero_grad()
+        loss.backward()
+        self.optim.step()
+
+    def save(self, dest: str = None):
+        """
+        保存整个网络的模型及参数
+
+        :param dest:
+        :return:
+        """
+
+        torch.save(self.network, dest)
+
+    def load(self, dest: str = None):
+        """
+        读取文件加载网络的模型及参数
+
+        :param dest:
+        :return:
+        """
+
+        self.network = torch.load(dest)

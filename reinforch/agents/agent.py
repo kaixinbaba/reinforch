@@ -48,7 +48,15 @@ class Agent(object):
 
         raise NotImplementedError
 
-    def _learn(self):
+    def after_done(self):
+        """
+        在每一个episode结束后的行为，通常是回合更新agent 学习的时候
+
+        :return:
+        """
+        pass
+
+    def learn(self):
         """
         智能体学习更新参数, 由子类实现
 
@@ -66,7 +74,7 @@ class Agent(object):
         :return:
         """
 
-        raise NotImplementedError
+        pass
 
     def close(self):
         """

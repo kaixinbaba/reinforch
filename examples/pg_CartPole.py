@@ -1,8 +1,9 @@
-from reinforch.agents import DQNAgent
+from reinforch.agents import PolicyGradientAgent
 from reinforch.core.logger import Log, INFO
-from reinforch.core.memorys import SimpleMatrixMemory
+from reinforch.core.memorys import PGMemory
 from reinforch.environments import OpenAIGym
 from reinforch.execution import Runner
+from examples import default_config_path, default_save_folder
 
 logger = Log(__name__, level=INFO)
 
@@ -15,22 +16,23 @@ if __name__ == '__main__':
         return reward
 
 
-    env = OpenAIGym('CartPole-v0', reward_shape=reward_shape)
+    gym_id = 'CartPole-v0'
+
+    env = OpenAIGym(gym_id, reward_shape=reward_shape)
     env.seed(7)
     n_s = env.n_s
     n_a = env.n_a
-    memory = SimpleMatrixMemory(row_size=2000, every_class_size=[n_s, 1, 1, n_s, 1])
-    agent = DQNAgent(n_s=n_s,
-                     n_a=n_a,
-                     memory=memory,
-                     config='configs/openai_gym_CartPole.json')
+    memory = PGMemory()
+
+    agent = PolicyGradientAgent(n_s=n_s,
+                                n_a=n_a,
+                                memory=memory,
+                                config=default_config_path('pg', gym_id))
     with Runner(agent=agent,
                 environment=env,
-                save_dest_folder='gym_cartpole_save_point',
+                save_dest_folder=default_save_folder('pg', gym_id),
                 verbose=False) as runner:
         runner.train(total_episode=500,
-                     max_step_in_one_episode=1000,
-                     save_episode=100,
                      save_final_model=True,
                      visualize=False)
 

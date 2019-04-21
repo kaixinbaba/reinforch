@@ -1,8 +1,9 @@
-from reinforch.agents import DQNAgent
+from reinforch.agents import PolicyGradientAgent
 from reinforch.core.logger import Log, INFO
-from reinforch.core.memorys import PrioritizeMemory
+from reinforch.core.memorys import PGMemory
 from reinforch.environments import OpenAIGym
 from reinforch.execution import Runner
+from examples import default_config_path, default_save_folder
 
 logger = Log(__name__, level=INFO)
 
@@ -18,21 +19,23 @@ if __name__ == '__main__':
             reward = 10
         return reward
 
+    gym_id = 'MountainCarContinuous-v0'
 
-    env = OpenAIGym('MountainCar-v0', reward_shape=reward_shape2)
+    env = OpenAIGym(gym_id, reward_shape=reward_shape2)
     env.seed(7)
     n_s = env.n_s
     n_a = env.n_a
-    memory = PrioritizeMemory(capacity=2000,
-                              every_class_size=[n_s, 1, 1, n_s, 1])
+    action_dim = env.actions.get('max_value')
+    memory = PGMemory()
 
-    agent = DQNAgent(n_s=n_s,
-                     n_a=n_a,
-                     memory=memory,
-                     config='configs/openai_gym_MountainCar.json')
+    agent = PolicyGradientAgent(n_s=n_s,
+                                n_a=n_a,
+                                action_dim=action_dim,
+                                memory=memory,
+                                config=default_config_path('pg', gym_id))
     with Runner(agent=agent,
                 environment=env,
-                save_dest_folder='gym_mountaincar_save_point',
+                save_dest_folder=default_save_folder('pg', gym_id),
                 verbose=False) as runner:
         runner.train(total_episode=5,
                      save_final_model=True,
