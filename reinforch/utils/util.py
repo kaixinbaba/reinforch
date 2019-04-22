@@ -92,9 +92,11 @@ def obj2tensor(obj, feed_network: bool = True, target_type=FloatTensor, target_s
             raise ReinforchException('The obj type {} can not be casted to Tensor'.format(type(obj)))
 
 
-def tensor2tensor(tensor, feed_network: bool = True, target_type=FloatTensor, target_shape: Union[list, tuple] = None):
+def tensor2tensor(tensor: torch.Tensor, feed_network: bool = True, target_type=FloatTensor, target_shape: Union[list, tuple] = None):
     if tensor is None:
-        raise ReinforchException("'None' type can not be casted to Tensor")
+        raise TypeError("'None' type can not be casted to Tensor")
+    if not isinstance(tensor, torch.Tensor):
+        raise TypeError('tensor expected "torch.Tensor", but get "{}"'.format(type(tensor)))
     # cast type
     tensor = tensor.type(target_type)
     if target_shape is not None:
