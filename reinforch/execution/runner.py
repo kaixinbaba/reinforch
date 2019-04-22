@@ -55,6 +55,7 @@ class Runner(object):
     def train(self,
               total_episode: int = 10000,
               max_step_in_one_episode: int = None,
+              save_model: bool = True,
               save_episode: int = 1000,
               save_final_model: bool = True,
               visualize=False):
@@ -96,7 +97,7 @@ class Runner(object):
                                 next_state=next_state,
                                 done=done,
                                 info=info)
-                if episode % save_episode == 0:
+                if save_model and episode % save_episode == 0:
                     # save model
                     self.__save(self.save_path.format(episode))
                 if done or (max_step_in_one_episode is not None and step == max_step_in_one_episode):

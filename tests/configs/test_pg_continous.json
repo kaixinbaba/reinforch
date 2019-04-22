@@ -1,0 +1,25 @@
+{
+  "type": "dense",
+  "in_size": 2,
+  "out_size": 1,
+  "layers": [
+    {
+      "type": "dense",
+      "name": "input",
+      "in_size": 2,
+      "out_size": 16
+    },
+    {
+      "type": "dense",
+      "name": "h1",
+      "in_size": 16,
+      "out_size": 16
+    },
+    {
+      "type": "linear",
+      "name": "output",
+      "in_size": 16,
+      "out_size": 1
+    }
+  ]
+}
