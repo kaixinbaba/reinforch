@@ -11,7 +11,7 @@ Reinforcement learning + pytorch \
 - [ ] DDPG
 - [ ] A3C
 - [ ] A2C
-- [ ] PPO
+- [ ] PPO [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
 - [ ] TRPO
 - [ ] D4PG
 - [ ] 待补充
