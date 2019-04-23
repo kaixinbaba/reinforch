@@ -152,7 +152,51 @@ class Conv1d(Layer):
 
 
 class Conv2d(Layer):
-    pass
+
+    def __init__(self,
+                 in_size,
+                 out_size,
+                 kernel_size,
+                 stride=1,
+                 padding=0,
+                 dilation=1,
+                 groups=1,
+                 bias=True,
+                 name=None):
+        super(Conv2d, self).__init__(name=name)
+        self.layer = nn.Conv2d(in_channels=in_size,
+                               out_channels=out_size,
+                               kernel_size=kernel_size,
+                               stride=stride,
+                               padding=padding,
+                               dilation=dilation,
+                               groups=groups,
+                               bias=bias)
+
+    def forward(self, x):
+        return self.layer(x)
+
+
+class MaxPool2d(Layer):
+
+    def __init__(self,
+                 kernel_size,
+                 stride=None,
+                 padding=0,
+                 dilation=1,
+                 return_indices=False,
+                 ceil_mode=False,
+                 name=None):
+        super(MaxPool2d, self).__init__(name=name)
+        self.layer = nn.MaxPool2d(kernel_size=kernel_size,
+                                  stride=stride,
+                                  padding=padding,
+                                  dilation=dilation,
+                                  return_indices=return_indices,
+                                  ceil_mode=ceil_mode)
+
+    def forward(self, x):
+        return self.layer(x)
 
 
 class InternalLstm(Layer):
@@ -164,7 +208,12 @@ class Lstm(Layer):
 
 
 class Flatten(Layer):
-    pass
+
+    def __init__(self, name=None):
+        super(Flatten, self).__init__(name=name)
+
+    def forward(self, x):
+        return x.view(-1)
 
 
 class Pool2d(Layer):
