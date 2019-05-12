@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+import os
 import torch
 import torch.nn.functional as F
 import torch.optim as optimize
@@ -251,7 +252,8 @@ class ActorModel(Model):
 
     @staticmethod
     def __actor_save_path(dest):
-        return 'actor_{}'.format(dest)
+        split = os.path.split(dest)
+        return os.path.join(split[0], 'actor_{}'.format(split[1]))
 
     def save(self, dest: str = None):
         """
@@ -310,7 +312,8 @@ class CriticModel(Model):
 
     @staticmethod
     def __critic_save_path(dest):
-        return 'critic_{}'.format(dest)
+        split = os.path.split(dest)
+        return os.path.join(split[0], 'critic_{}'.format(split[1]))
 
     def save(self, dest: str = None):
         """

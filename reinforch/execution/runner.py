@@ -137,8 +137,6 @@ class Runner(object):
 
     def __load(self, suffix='last'):
         _path = self.save_path.format(suffix)
-        if not os.path.exists(_path):
-            raise ReinforchException('"{}" does not exists!'.format(_path))
         self.agent.load(_path)
 
     def __enter__(self):

@@ -6,7 +6,7 @@ from reinforch.agents import Agent
 from reinforch.core.configs import Config
 from reinforch.core.logger import Log
 from reinforch.models import ActorModel, CriticModel
-from reinforch.utils import o2t
+from reinforch.utils import o2t, read_config, LongTensor
 
 logging = Log(__name__)
 
@@ -20,8 +20,7 @@ class ActorCriticAgent(Agent):
                  critic_lr: float = 0.001,
                  gamma: float = 0.99,
                  action_dim: int = None,
-                 actor_config: Union[str, dict, Config] = None,
-                 critic_config: Union[str, dict, Config] = None):
+                 config: Union[str, dict, Config] = None):
         super(ActorCriticAgent, self).__init__()
         self.n_s = n_s
         self.n_a = n_a
@@ -29,6 +28,9 @@ class ActorCriticAgent(Agent):
         self.continue_action = action_dim is not None
         self.gamma = gamma
         self.eploration_var = 1
+        config = read_config(config)
+        actor_config = config['actor']
+        critic_config = config['critic']
         self.actor_model = self.init_model(in_size=self.n_s,
                                            out_size=self.n_a,
                                            last_scale=action_dim,
@@ -44,9 +46,10 @@ class ActorCriticAgent(Agent):
                                             model_type='critic')
 
     def init_model(self, **kwargs):
-        if 'actor' == kwargs.pop('model_type'):
+        model_type = kwargs.pop('model_type')
+        if 'actor' == model_type:
             return ActorModel(**kwargs)
-        elif 'critic' == kwargs.pop('model_type'):
+        elif 'critic' == model_type:
             return CriticModel(**kwargs)
 
     def act(self, state):
@@ -83,7 +86,9 @@ class ActorCriticAgent(Agent):
 
     def actor_learn(self, state, action, td_error):
         state = o2t(state)
-        action = o2t([action])
+        # action = o2t(action, target_type=LongTensor, target_shape=[1, 1])
+        import torch
+        action = torch.LongTensor([action]).unsqueeze(0)
         self.actor_model.update(state=state, action=action, td_error=td_error)
 
     def save(self, dest=None):
