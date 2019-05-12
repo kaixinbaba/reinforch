@@ -6,8 +6,8 @@ from reinforch.agents import Agent
 from reinforch.core.configs import Config
 from reinforch.core.logger import Log
 from reinforch.core.memorys import Memory, PrioritizeMemory
-from reinforch.models import DQNModel
 from reinforch.exception import ReinforchException
+from reinforch.models import DQNModel
 from reinforch.utils import o2t, LongTensor
 
 logging = Log(__name__)
@@ -174,10 +174,10 @@ class DQNAgent(Agent):
                                        b_r=b_reward,
                                        b_s_=b_next_state,
                                        b_done=b_done)
-        self._after_update(memory_sample_result=memory_sample_result,
-                           abs_errors=abs_errors)
+        self.after_update(memory_sample_result=memory_sample_result,
+                          abs_errors=abs_errors)
 
-    def _after_update(self, *args, **kwargs):
+    def after_update(self, *args, **kwargs):
         memory_sample_result = kwargs.get('memory_sample_result')
         if self.is_prioritize and memory_sample_result is not None \
                 and memory_sample_result.get('tree_index') is not None \
@@ -200,4 +200,3 @@ class DQNAgent(Agent):
 
     def __str__(self):
         return '<DQNAgent>'
-

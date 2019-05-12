@@ -56,16 +56,7 @@ class Agent(object):
         """
         pass
 
-    def learn(self):
-        """
-        智能体学习更新参数, 由子类实现
-
-        :return:
-        """
-
-        raise NotImplementedError
-
-    def _after_update(self, *args, **kwargs):
+    def after_update(self, *args, **kwargs):
         """
         模型更新后，钩子方法
 

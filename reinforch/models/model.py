@@ -216,3 +216,118 @@ class PolicyGradientModel(Model):
         """
 
         self.network.load_state_dict(torch.load(dest))
+
+
+class ActorModel(Model):
+
+    def __init__(self,
+                 in_size=None,
+                 out_size=None,
+                 last_scale=None,
+                 lr=0.01,
+                 gamma=0.99,
+                 config=None):
+        super(ActorModel, self).__init__()
+        self.in_size = in_size
+        self.out_size = out_size
+        self.last_scale = last_scale
+        self.lr = lr
+        self.gamma = gamma
+        self.learn_count = 0
+        self.network = Network.from_config(config=config)
+        self.optim = optimize.Adam(self.network.parameters(), lr=lr)
+
+    def forward(self, x):
+        return self.network(x)
+
+    def update(self, state=None, action=None, td_error=None):
+        action_prop = self.network(state)
+        action_value = torch.gather(action_prop, 1, action)
+        actor_loss = torch.mean(-torch.log(action_value) * td_error)
+
+        self.optim.zero_grad()
+        actor_loss.backward()
+        self.optim.step()
+
+    @staticmethod
+    def __actor_save_path(dest):
+        return 'actor_{}'.format(dest)
+
+    def save(self, dest: str = None):
+        """
+        保存整个网络的模型及参数
+
+        :param dest:
+        :return:
+        """
+
+        torch.save(self.network.state_dict(), self.__actor_save_path(dest))
+
+    def load(self, dest: str = None):
+        """
+        读取文件加载网络的模型及参数
+
+        :param dest:
+        :return:
+        """
+
+        self.network.load_state_dict(torch.load(self.__actor_save_path(dest)))
+
+
+class CriticModel(Model):
+
+    def __init__(self,
+                 in_size=None,
+                 out_size=None,
+                 last_scale=None,
+                 lr=0.001,
+                 gamma=0.99,
+                 config=None):
+        super(CriticModel, self).__init__()
+        self.in_size = in_size
+        self.out_size = out_size
+        self.last_scale = last_scale
+        self.lr = lr
+        self.gamma = gamma
+        self.learn_count = 0
+        self.network = Network.from_config(config=config)
+        self.optim = optimize.Adam(self.network.parameters(), lr=lr)
+        self.loss = F.mse_loss
+
+    def forward(self, x):
+        return self.network(x)
+
+    def update(self, state=None, reward=None, next_state=None):
+        V = self.network(state)
+        V_ = self.network(next_state)
+        V_target = reward + self.gamma * V_
+        td_error = V_target - V
+        critic_loss = self.loss(V_target, V)
+        self.optim.zero_grad()
+        critic_loss.backward(retain_graph=True)
+        self.optim.step()
+        return td_error
+
+    @staticmethod
+    def __critic_save_path(dest):
+        return 'critic_{}'.format(dest)
+
+    def save(self, dest: str = None):
+        """
+        保存整个网络的模型及参数
+
+        :param dest:
+        :return:
+        """
+
+        torch.save(self.network.state_dict(), self.__critic_save_path(dest))
+
+    def load(self, dest: str = None):
+        """
+        读取文件加载网络的模型及参数
+
+        :param dest:
+        :return:
+        """
+
+        self.network.load_state_dict(torch.load(self.__critic_save_path(dest)))
